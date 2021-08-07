@@ -4,13 +4,17 @@
 #
 Name     : podman
 Version  : 3.2.3
-Release  : 1
+Release  : 2
 URL      : https://github.com/containers/podman/archive/refs/tags/v3.2.3.tar.gz
 Source0  : https://github.com/containers/podman/archive/refs/tags/v3.2.3.tar.gz
 Summary  : Builds Dockerfile using the Docker client
 Group    : Development/Tools
 License  : Apache-2.0 BSD-2-Clause BSD-3-Clause CC-BY-SA-4.0 ISC LGPL-3.0 MIT MPL-2.0 MPL-2.0-no-copyleft-exception Unlicense
+Requires: podman-bin = %{version}-%{release}
+Requires: podman-config = %{version}-%{release}
 Requires: podman-license = %{version}-%{release}
+Requires: podman-man = %{version}-%{release}
+Requires: podman-services = %{version}-%{release}
 BuildRequires : buildreq-golang
 BuildRequires : golang-github-cpuguy83-go-md2man
 BuildRequires : gpgme-dev
@@ -20,12 +24,47 @@ BuildRequires : systemd-dev
 %description
 Builds Dockerfile using the Docker client
 
+%package bin
+Summary: bin components for the podman package.
+Group: Binaries
+Requires: podman-config = %{version}-%{release}
+Requires: podman-license = %{version}-%{release}
+Requires: podman-services = %{version}-%{release}
+
+%description bin
+bin components for the podman package.
+
+
+%package config
+Summary: config components for the podman package.
+Group: Default
+
+%description config
+config components for the podman package.
+
+
 %package license
 Summary: license components for the podman package.
 Group: Default
 
 %description license
 license components for the podman package.
+
+
+%package man
+Summary: man components for the podman package.
+Group: Default
+
+%description man
+man components for the podman package.
+
+
+%package services
+Summary: services components for the podman package.
+Group: Systemd services
+
+%description services
+services components for the podman package.
 
 
 %prep
@@ -37,7 +76,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1628285868
+export SOURCE_DATE_EPOCH=1628297709
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -46,11 +85,11 @@ export CFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=auto "
 export FCFLAGS="$FFLAGS -O3 -ffat-lto-objects -flto=auto "
 export FFLAGS="$FFLAGS -O3 -ffat-lto-objects -flto=auto "
 export CXXFLAGS="$CXXFLAGS -O3 -ffat-lto-objects -flto=auto "
-make  %{?_smp_mflags}
+make  %{?_smp_mflags}  PREFIX=/usr
 
 
 %install
-export SOURCE_DATE_EPOCH=1628285868
+export SOURCE_DATE_EPOCH=1628297709
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/podman
 cp %{_builddir}/podman-3.2.3/LICENSE %{buildroot}/usr/share/package-licenses/podman/92170cdc034b2ff819323ff670d3b7266c8bffcd
@@ -226,10 +265,19 @@ cp %{_builddir}/podman-3.2.3/vendor/k8s.io/api/LICENSE %{buildroot}/usr/share/pa
 cp %{_builddir}/podman-3.2.3/vendor/k8s.io/apimachinery/LICENSE %{buildroot}/usr/share/package-licenses/podman/2b8b815229aa8a61e483fb4ba0588b8b6c491890
 cp %{_builddir}/podman-3.2.3/vendor/k8s.io/klog/v2/LICENSE %{buildroot}/usr/share/package-licenses/podman/172ca3bbafe312a1cf09cfff26953db2f425c28e
 cp %{_builddir}/podman-3.2.3/vendor/sigs.k8s.io/structured-merge-diff/v4/LICENSE %{buildroot}/usr/share/package-licenses/podman/92170cdc034b2ff819323ff670d3b7266c8bffcd
-%make_install
+%make_install PREFIX=/usr
 
 %files
 %defattr(-,root,root,-)
+
+%files bin
+%defattr(-,root,root,-)
+/usr/bin/podman
+/usr/bin/podman-remote
+
+%files config
+%defattr(-,root,root,-)
+/usr/lib/tmpfiles.d/podman.conf
 
 %files license
 %defattr(0644,root,root,0755)
@@ -337,3 +385,203 @@ cp %{_builddir}/podman-3.2.3/vendor/sigs.k8s.io/structured-merge-diff/v4/LICENSE
 /usr/share/package-licenses/podman/f9cab757896ef6b3570e62b2df7fb63ab1a34b80
 /usr/share/package-licenses/podman/fd6460234f122a19f21affb6d6885269340b9176
 /usr/share/package-licenses/podman/ff007ce11f3ff7964f1a5b04202c4e95b5c82c85
+
+%files man
+%defattr(0644,root,root,0755)
+/usr/share/man/man1/podman-attach.1
+/usr/share/man/man1/podman-auto-update.1
+/usr/share/man/man1/podman-build.1
+/usr/share/man/man1/podman-commit.1
+/usr/share/man/man1/podman-completion.1
+/usr/share/man/man1/podman-container-attach.1
+/usr/share/man/man1/podman-container-checkpoint.1
+/usr/share/man/man1/podman-container-cleanup.1
+/usr/share/man/man1/podman-container-commit.1
+/usr/share/man/man1/podman-container-cp.1
+/usr/share/man/man1/podman-container-create.1
+/usr/share/man/man1/podman-container-diff.1
+/usr/share/man/man1/podman-container-exec.1
+/usr/share/man/man1/podman-container-exists.1
+/usr/share/man/man1/podman-container-export.1
+/usr/share/man/man1/podman-container-init.1
+/usr/share/man/man1/podman-container-inspect.1
+/usr/share/man/man1/podman-container-kill.1
+/usr/share/man/man1/podman-container-list.1
+/usr/share/man/man1/podman-container-logs.1
+/usr/share/man/man1/podman-container-ls.1
+/usr/share/man/man1/podman-container-mount.1
+/usr/share/man/man1/podman-container-pause.1
+/usr/share/man/man1/podman-container-port.1
+/usr/share/man/man1/podman-container-prune.1
+/usr/share/man/man1/podman-container-ps.1
+/usr/share/man/man1/podman-container-rename.1
+/usr/share/man/man1/podman-container-restart.1
+/usr/share/man/man1/podman-container-restore.1
+/usr/share/man/man1/podman-container-rm.1
+/usr/share/man/man1/podman-container-run.1
+/usr/share/man/man1/podman-container-runlabel.1
+/usr/share/man/man1/podman-container-start.1
+/usr/share/man/man1/podman-container-stats.1
+/usr/share/man/man1/podman-container-stop.1
+/usr/share/man/man1/podman-container-top.1
+/usr/share/man/man1/podman-container-umount.1
+/usr/share/man/man1/podman-container-unmount.1
+/usr/share/man/man1/podman-container-unpause.1
+/usr/share/man/man1/podman-container-wait.1
+/usr/share/man/man1/podman-container.1
+/usr/share/man/man1/podman-cp.1
+/usr/share/man/man1/podman-create.1
+/usr/share/man/man1/podman-diff.1
+/usr/share/man/man1/podman-events.1
+/usr/share/man/man1/podman-exec.1
+/usr/share/man/man1/podman-export.1
+/usr/share/man/man1/podman-generate-kube.1
+/usr/share/man/man1/podman-generate-systemd.1
+/usr/share/man/man1/podman-generate.1
+/usr/share/man/man1/podman-healthcheck-run.1
+/usr/share/man/man1/podman-healthcheck.1
+/usr/share/man/man1/podman-help.1
+/usr/share/man/man1/podman-history.1
+/usr/share/man/man1/podman-image-build.1
+/usr/share/man/man1/podman-image-diff.1
+/usr/share/man/man1/podman-image-exists.1
+/usr/share/man/man1/podman-image-history.1
+/usr/share/man/man1/podman-image-import.1
+/usr/share/man/man1/podman-image-inspect.1
+/usr/share/man/man1/podman-image-list.1
+/usr/share/man/man1/podman-image-load.1
+/usr/share/man/man1/podman-image-ls.1
+/usr/share/man/man1/podman-image-mount.1
+/usr/share/man/man1/podman-image-prune.1
+/usr/share/man/man1/podman-image-pull.1
+/usr/share/man/man1/podman-image-push.1
+/usr/share/man/man1/podman-image-rm.1
+/usr/share/man/man1/podman-image-save.1
+/usr/share/man/man1/podman-image-search.1
+/usr/share/man/man1/podman-image-sign.1
+/usr/share/man/man1/podman-image-tag.1
+/usr/share/man/man1/podman-image-tree.1
+/usr/share/man/man1/podman-image-trust.1
+/usr/share/man/man1/podman-image-umount.1
+/usr/share/man/man1/podman-image-unmount.1
+/usr/share/man/man1/podman-image-untag.1
+/usr/share/man/man1/podman-image.1
+/usr/share/man/man1/podman-images.1
+/usr/share/man/man1/podman-import.1
+/usr/share/man/man1/podman-info.1
+/usr/share/man/man1/podman-init.1
+/usr/share/man/man1/podman-inspect.1
+/usr/share/man/man1/podman-kill.1
+/usr/share/man/man1/podman-load.1
+/usr/share/man/man1/podman-login.1
+/usr/share/man/man1/podman-logout.1
+/usr/share/man/man1/podman-logs.1
+/usr/share/man/man1/podman-machine-init.1
+/usr/share/man/man1/podman-machine-list.1
+/usr/share/man/man1/podman-machine-ls.1
+/usr/share/man/man1/podman-machine-rm.1
+/usr/share/man/man1/podman-machine-ssh.1
+/usr/share/man/man1/podman-machine-start.1
+/usr/share/man/man1/podman-machine-stop.1
+/usr/share/man/man1/podman-machine.1
+/usr/share/man/man1/podman-manifest-add.1
+/usr/share/man/man1/podman-manifest-annotate.1
+/usr/share/man/man1/podman-manifest-create.1
+/usr/share/man/man1/podman-manifest-exists.1
+/usr/share/man/man1/podman-manifest-inspect.1
+/usr/share/man/man1/podman-manifest-push.1
+/usr/share/man/man1/podman-manifest-remove.1
+/usr/share/man/man1/podman-manifest.1
+/usr/share/man/man1/podman-mount.1
+/usr/share/man/man1/podman-network-connect.1
+/usr/share/man/man1/podman-network-create.1
+/usr/share/man/man1/podman-network-disconnect.1
+/usr/share/man/man1/podman-network-exists.1
+/usr/share/man/man1/podman-network-inspect.1
+/usr/share/man/man1/podman-network-ls.1
+/usr/share/man/man1/podman-network-prune.1
+/usr/share/man/man1/podman-network-reload.1
+/usr/share/man/man1/podman-network-rm.1
+/usr/share/man/man1/podman-network.1
+/usr/share/man/man1/podman-pause.1
+/usr/share/man/man1/podman-play-kube.1
+/usr/share/man/man1/podman-play.1
+/usr/share/man/man1/podman-pod-create.1
+/usr/share/man/man1/podman-pod-exists.1
+/usr/share/man/man1/podman-pod-inspect.1
+/usr/share/man/man1/podman-pod-kill.1
+/usr/share/man/man1/podman-pod-pause.1
+/usr/share/man/man1/podman-pod-prune.1
+/usr/share/man/man1/podman-pod-ps.1
+/usr/share/man/man1/podman-pod-restart.1
+/usr/share/man/man1/podman-pod-rm.1
+/usr/share/man/man1/podman-pod-start.1
+/usr/share/man/man1/podman-pod-stats.1
+/usr/share/man/man1/podman-pod-stop.1
+/usr/share/man/man1/podman-pod-top.1
+/usr/share/man/man1/podman-pod-unpause.1
+/usr/share/man/man1/podman-pod.1
+/usr/share/man/man1/podman-port.1
+/usr/share/man/man1/podman-ps.1
+/usr/share/man/man1/podman-pull.1
+/usr/share/man/man1/podman-push.1
+/usr/share/man/man1/podman-remote.1
+/usr/share/man/man1/podman-rename.1
+/usr/share/man/man1/podman-restart.1
+/usr/share/man/man1/podman-rm.1
+/usr/share/man/man1/podman-rmi.1
+/usr/share/man/man1/podman-run.1
+/usr/share/man/man1/podman-save.1
+/usr/share/man/man1/podman-search.1
+/usr/share/man/man1/podman-secret-create.1
+/usr/share/man/man1/podman-secret-inspect.1
+/usr/share/man/man1/podman-secret-ls.1
+/usr/share/man/man1/podman-secret-rm.1
+/usr/share/man/man1/podman-secret.1
+/usr/share/man/man1/podman-start.1
+/usr/share/man/man1/podman-stats.1
+/usr/share/man/man1/podman-stop.1
+/usr/share/man/man1/podman-system-connection-add.1
+/usr/share/man/man1/podman-system-connection-default.1
+/usr/share/man/man1/podman-system-connection-list.1
+/usr/share/man/man1/podman-system-connection-remove.1
+/usr/share/man/man1/podman-system-connection-rename.1
+/usr/share/man/man1/podman-system-connection.1
+/usr/share/man/man1/podman-system-df.1
+/usr/share/man/man1/podman-system-info.1
+/usr/share/man/man1/podman-system-migrate.1
+/usr/share/man/man1/podman-system-prune.1
+/usr/share/man/man1/podman-system-renumber.1
+/usr/share/man/man1/podman-system-reset.1
+/usr/share/man/man1/podman-system-service.1
+/usr/share/man/man1/podman-system.1
+/usr/share/man/man1/podman-tag.1
+/usr/share/man/man1/podman-top.1
+/usr/share/man/man1/podman-umount.1
+/usr/share/man/man1/podman-unmount.1
+/usr/share/man/man1/podman-unpause.1
+/usr/share/man/man1/podman-unshare.1
+/usr/share/man/man1/podman-untag.1
+/usr/share/man/man1/podman-version.1
+/usr/share/man/man1/podman-volume-create.1
+/usr/share/man/man1/podman-volume-exists.1
+/usr/share/man/man1/podman-volume-inspect.1
+/usr/share/man/man1/podman-volume-ls.1
+/usr/share/man/man1/podman-volume-prune.1
+/usr/share/man/man1/podman-volume-rm.1
+/usr/share/man/man1/podman-volume.1
+/usr/share/man/man1/podman-wait.1
+/usr/share/man/man1/podman.1
+/usr/share/man/man5/containers-mounts.conf.5
+/usr/share/man/man5/oci-hooks.5
+
+%files services
+%defattr(-,root,root,-)
+/usr/lib/systemd/system/podman-auto-update.service
+/usr/lib/systemd/system/podman-auto-update.timer
+/usr/lib/systemd/system/podman.service
+/usr/lib/systemd/system/podman.socket
+/usr/lib/systemd/user/podman-auto-update.service
+/usr/lib/systemd/user/podman-auto-update.timer
+/usr/lib/systemd/user/podman.service
+/usr/lib/systemd/user/podman.socket
