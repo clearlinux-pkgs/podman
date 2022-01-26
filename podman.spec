@@ -4,7 +4,7 @@
 #
 Name     : podman
 Version  : 3.4.4
-Release  : 11
+Release  : 12
 URL      : https://github.com/containers/podman/archive/v3.4.4/podman-3.4.4.tar.gz
 Source0  : https://github.com/containers/podman/archive/v3.4.4/podman-3.4.4.tar.gz
 Summary  : Builds Dockerfile using the Docker client
@@ -12,6 +12,7 @@ Group    : Development/Tools
 License  : Apache-2.0 BSD-2-Clause BSD-3-Clause CC-BY-SA-4.0 ISC MIT MPL-2.0 MPL-2.0-no-copyleft-exception Unlicense
 Requires: podman-bin = %{version}-%{release}
 Requires: podman-config = %{version}-%{release}
+Requires: podman-data = %{version}-%{release}
 Requires: podman-license = %{version}-%{release}
 Requires: podman-man = %{version}-%{release}
 Requires: podman-services = %{version}-%{release}
@@ -21,6 +22,7 @@ BuildRequires : golang-github-cpuguy83-go-md2man
 BuildRequires : gpgme-dev
 BuildRequires : pkgconfig(libseccomp)
 BuildRequires : systemd-dev
+Patch1: 0001-Enable-stateless.patch
 
 %description
 Builds Dockerfile using the Docker client
@@ -28,6 +30,7 @@ Builds Dockerfile using the Docker client
 %package bin
 Summary: bin components for the podman package.
 Group: Binaries
+Requires: podman-data = %{version}-%{release}
 Requires: podman-config = %{version}-%{release}
 Requires: podman-license = %{version}-%{release}
 Requires: podman-services = %{version}-%{release}
@@ -42,6 +45,14 @@ Group: Default
 
 %description config
 config components for the podman package.
+
+
+%package data
+Summary: data components for the podman package.
+Group: Data
+
+%description data
+data components for the podman package.
 
 
 %package license
@@ -71,13 +82,14 @@ services components for the podman package.
 %prep
 %setup -q -n podman-3.4.4
 cd %{_builddir}/podman-3.4.4
+%patch1 -p1
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1641338389
+export SOURCE_DATE_EPOCH=1643222199
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -90,7 +102,7 @@ make  %{?_smp_mflags}  PREFIX=/usr
 
 
 %install
-export SOURCE_DATE_EPOCH=1641338389
+export SOURCE_DATE_EPOCH=1643222199
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/podman
 cp %{_builddir}/podman-3.4.4/LICENSE %{buildroot}/usr/share/package-licenses/podman/ddb5ce16d6184c36bffbf19074f58c3fddf6d399
@@ -177,6 +189,7 @@ cp %{_builddir}/podman-3.4.4/vendor/github.com/ishidawataru/sctp/GO_LICENSE %{bu
 cp %{_builddir}/podman-3.4.4/vendor/github.com/ishidawataru/sctp/LICENSE %{buildroot}/usr/share/package-licenses/podman/92170cdc034b2ff819323ff670d3b7266c8bffcd
 cp %{_builddir}/podman-3.4.4/vendor/github.com/jinzhu/copier/License %{buildroot}/usr/share/package-licenses/podman/9ea762f96a976992ce1987949b894d31192bb310
 cp %{_builddir}/podman-3.4.4/vendor/github.com/json-iterator/go/LICENSE %{buildroot}/usr/share/package-licenses/podman/810612ee8c1872b7ee4dba34c090ebd8f7491aa1
+cp %{_builddir}/podman-3.4.4/vendor/github.com/klauspost/compress/LICENSE %{buildroot}/usr/share/package-licenses/podman/0e8f2042647b8140e79c4eb7d233d1b39231db09
 cp %{_builddir}/podman-3.4.4/vendor/github.com/klauspost/compress/internal/snapref/LICENSE %{buildroot}/usr/share/package-licenses/podman/b7b97d84a5f0b778ab971d2afce44f47c8b6e80a
 cp %{_builddir}/podman-3.4.4/vendor/github.com/klauspost/compress/zstd/internal/xxhash/LICENSE.txt %{buildroot}/usr/share/package-licenses/podman/7be82c1a81e7197640a88df91dc82d64b77c7acd
 cp %{_builddir}/podman-3.4.4/vendor/github.com/klauspost/pgzip/GO_LICENSE %{buildroot}/usr/share/package-licenses/podman/7f7a12bcfc16fab2522aa1a562fd3d2aee429d3b
@@ -281,11 +294,16 @@ cp %{_builddir}/podman-3.4.4/vendor/sigs.k8s.io/structured-merge-diff/v4/LICENSE
 %defattr(-,root,root,-)
 /usr/lib/tmpfiles.d/podman.conf
 
+%files data
+%defattr(-,root,root,-)
+/usr/share/defaults/containers/policy.json
+
 %files license
 %defattr(0644,root,root,0755)
 /usr/share/package-licenses/podman/06b27345acae9303e13dde9974d2b2e318b05989
 /usr/share/package-licenses/podman/08021ae73f58f423dd6e7b525e81cf2520f7619e
 /usr/share/package-licenses/podman/0d536c488ea6ea11771a6933db2362a87d9d7077
+/usr/share/package-licenses/podman/0e8f2042647b8140e79c4eb7d233d1b39231db09
 /usr/share/package-licenses/podman/1128f8f91104ba9ef98d37eea6523a888dcfa5de
 /usr/share/package-licenses/podman/11a8fec351554e8f6c3f4dac5a1f4049dd467ba8
 /usr/share/package-licenses/podman/147d5d72b02467b04653ff37be85b8e201e9af66
