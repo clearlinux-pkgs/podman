@@ -4,7 +4,7 @@
 #
 Name     : podman
 Version  : 3.4.4
-Release  : 12
+Release  : 13
 URL      : https://github.com/containers/podman/archive/v3.4.4/podman-3.4.4.tar.gz
 Source0  : https://github.com/containers/podman/archive/v3.4.4/podman-3.4.4.tar.gz
 Summary  : Builds Dockerfile using the Docker client
@@ -17,6 +17,7 @@ Requires: podman-license = %{version}-%{release}
 Requires: podman-man = %{version}-%{release}
 Requires: podman-services = %{version}-%{release}
 Requires: conmon
+Requires: slirp4netns
 BuildRequires : buildreq-golang
 BuildRequires : golang-github-cpuguy83-go-md2man
 BuildRequires : gpgme-dev
@@ -89,7 +90,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1643222199
+export SOURCE_DATE_EPOCH=1643241530
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -102,7 +103,7 @@ make  %{?_smp_mflags}  PREFIX=/usr
 
 
 %install
-export SOURCE_DATE_EPOCH=1643222199
+export SOURCE_DATE_EPOCH=1643241530
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/podman
 cp %{_builddir}/podman-3.4.4/LICENSE %{buildroot}/usr/share/package-licenses/podman/ddb5ce16d6184c36bffbf19074f58c3fddf6d399

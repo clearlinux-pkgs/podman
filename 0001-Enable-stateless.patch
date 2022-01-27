@@ -1,16 +1,18 @@
-From d6313a9b70a5ed176ec456c110a454e009b065f1 Mon Sep 17 00:00:00 2001
+From 2b350587bf1bd522b20c34f76c46c6c07f6718bf Mon Sep 17 00:00:00 2001
 From: Ganesh Maharaj Mahalingam <ganesh.mahalingam@intel.com>
 Date: Wed, 26 Jan 2022 10:28:47 -0800
 Subject: [PATCH] Enable stateless
 
 Signed-off-by: Ganesh Maharaj Mahalingam <ganesh.mahalingam@intel.com>
 ---
- Makefile                                           |  8 +++++++-
- additionalfiles/policy.json                        | 14 ++++++++++++++
- pkg/trust/trust.go                                 |  2 +-
- .../containers/common/pkg/config/config.go         |  2 +-
- .../containers/common/pkg/config/default.go        |  2 +-
- 5 files changed, 24 insertions(+), 4 deletions(-)
+ Makefile                                      |  8 +++++-
+ additionalfiles/policy.json                   | 14 ++++++++++
+ libpod/container_internal_linux.go            | 26 +++++++++++--------
+ pkg/trust/trust.go                            |  2 +-
+ .../containers/common/pkg/config/config.go    |  2 +-
+ .../containers/common/pkg/config/default.go   |  2 +-
+ .../image/v5/signature/policy_config.go       |  2 +-
+ 7 files changed, 40 insertions(+), 16 deletions(-)
  create mode 100644 additionalfiles/policy.json
 
 diff --git a/Makefile b/Makefile
@@ -66,6 +68,90 @@ index 000000000..dffc54a62
 +                }
 +        }
 +}
+diff --git a/libpod/container_internal_linux.go b/libpod/container_internal_linux.go
+index eb05ca423..285311676 100644
+--- a/libpod/container_internal_linux.go
++++ b/libpod/container_internal_linux.go
+@@ -56,6 +56,10 @@ import (
+ 	"golang.org/x/sys/unix"
+ )
+ 
++const (
++	hostsFilePath = "/usr/share/defaults/etc/hosts"
++)
++
+ func (c *Container) mountSHM(shmOptions string) error {
+ 	if err := unix.Mount("shm", c.config.ShmDir, "tmpfs", unix.MS_NOEXEC|unix.MS_NOSUID|unix.MS_NODEV,
+ 		label.FormatMountLabel(shmOptions, c.config.MountLabel)); err != nil {
+@@ -1572,11 +1576,11 @@ func (c *Container) makeBindMounts() error {
+ 				}
+ 				delete(c.state.BindMounts, "/etc/resolv.conf")
+ 			}
+-			if hostsPath, ok := c.state.BindMounts["/etc/hosts"]; ok {
++			if hostsPath, ok := c.state.BindMounts[hostsFilePath]; ok {
+ 				if err := os.Remove(hostsPath); err != nil && !os.IsNotExist(err) {
+ 					return errors.Wrapf(err, "container %s", c.ID())
+ 				}
+-				delete(c.state.BindMounts, "/etc/hosts")
++				delete(c.state.BindMounts, hostsFilePath)
+ 			}
+ 		}
+ 
+@@ -1605,7 +1609,7 @@ func (c *Container) makeBindMounts() error {
+ 
+ 			// check if dependency container has an /etc/hosts file.
+ 			// It may not have one, so only use it if it does.
+-			hostsPath, exists := bindMounts["/etc/hosts"]
++			hostsPath, exists := bindMounts[hostsFilePath]
+ 			if !c.config.UseImageHosts && exists {
+ 				depCtr.lock.Lock()
+ 				// generate a hosts file for the dependency container,
+@@ -1620,7 +1624,7 @@ func (c *Container) makeBindMounts() error {
+ 				depCtr.lock.Unlock()
+ 
+ 				// finally, save it in the new container
+-				c.state.BindMounts["/etc/hosts"] = hostsPath
++				c.state.BindMounts[hostsFilePath] = hostsPath
+ 			}
+ 
+ 			if !hasCurrentUserMapped(c) {
+@@ -1641,16 +1645,16 @@ func (c *Container) makeBindMounts() error {
+ 			}
+ 
+ 			if !c.config.UseImageHosts {
+-				newHosts, err := c.generateHosts("/etc/hosts")
++				newHosts, err := c.generateHosts(hostsFilePath)
+ 				if err != nil {
+ 					return errors.Wrapf(err, "error creating hosts file for container %s", c.ID())
+ 				}
+-				c.state.BindMounts["/etc/hosts"] = newHosts
++				c.state.BindMounts[hostsFilePath] = newHosts
+ 			}
+ 		}
+ 
+-		if c.state.BindMounts["/etc/hosts"] != "" {
+-			if err := label.Relabel(c.state.BindMounts["/etc/hosts"], c.config.MountLabel, true); err != nil {
++		if c.state.BindMounts[hostsFilePath] != "" {
++			if err := label.Relabel(c.state.BindMounts[hostsFilePath], c.config.MountLabel, true); err != nil {
+ 				return err
+ 			}
+ 		}
+@@ -1661,12 +1665,12 @@ func (c *Container) makeBindMounts() error {
+ 			}
+ 		}
+ 	} else {
+-		if !c.config.UseImageHosts && c.state.BindMounts["/etc/hosts"] == "" {
+-			newHosts, err := c.generateHosts("/etc/hosts")
++		if !c.config.UseImageHosts && c.state.BindMounts[hostsFilePath] == "" {
++			newHosts, err := c.generateHosts(hostsFilePath)
+ 			if err != nil {
+ 				return errors.Wrapf(err, "error creating hosts file for container %s", c.ID())
+ 			}
+-			c.state.BindMounts["/etc/hosts"] = newHosts
++			c.state.BindMounts[hostsFilePath] = newHosts
+ 		}
+ 	}
+ 
 diff --git a/pkg/trust/trust.go b/pkg/trust/trust.go
 index 18a6a1717..57d50755c 100644
 --- a/pkg/trust/trust.go
@@ -105,6 +191,19 @@ index bc88e5135..442ca6ff6 100644
  	// DefaultSubnet is the subnet that will be used for the default CNI
  	// network.
  	DefaultSubnet = "10.88.0.0/16"
+diff --git a/vendor/github.com/containers/image/v5/signature/policy_config.go b/vendor/github.com/containers/image/v5/signature/policy_config.go
+index 82fbb68cb..8b307233d 100644
+--- a/vendor/github.com/containers/image/v5/signature/policy_config.go
++++ b/vendor/github.com/containers/image/v5/signature/policy_config.go
+@@ -35,7 +35,7 @@ var systemDefaultPolicyPath = builtinDefaultPolicyPath
+ 
+ // builtinDefaultPolicyPath is the policy path used for DefaultPolicy().
+ // DO NOT change this, instead see systemDefaultPolicyPath above.
+-const builtinDefaultPolicyPath = "/etc/containers/policy.json"
++const builtinDefaultPolicyPath = "/usr/share/defaults/containers/policy.json"
+ 
+ // userPolicyFile is the path to the per user policy path.
+ var userPolicyFile = filepath.FromSlash(".config/containers/policy.json")
 -- 
 2.35.0
 
