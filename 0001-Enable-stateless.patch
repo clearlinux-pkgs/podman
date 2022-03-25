@@ -1,33 +1,33 @@
-From 2b350587bf1bd522b20c34f76c46c6c07f6718bf Mon Sep 17 00:00:00 2001
+From 39131b8845541785eb0125d2e114d8da7dbebae6 Mon Sep 17 00:00:00 2001
 From: Ganesh Maharaj Mahalingam <ganesh.mahalingam@intel.com>
-Date: Wed, 26 Jan 2022 10:28:47 -0800
+Date: Thu, 24 Mar 2022 21:44:59 -0700
 Subject: [PATCH] Enable stateless
 
 Signed-off-by: Ganesh Maharaj Mahalingam <ganesh.mahalingam@intel.com>
 ---
- Makefile                                      |  8 +++++-
- additionalfiles/policy.json                   | 14 ++++++++++
- libpod/container_internal_linux.go            | 26 +++++++++++--------
+ Makefile                                      |  8 ++++++-
+ additionalfiles/policy.json                   | 14 +++++++++++
+ libpod/container_internal_linux.go            | 24 +++++++++++--------
  pkg/trust/trust.go                            |  2 +-
  .../containers/common/pkg/config/config.go    |  2 +-
  .../containers/common/pkg/config/default.go   |  2 +-
  .../image/v5/signature/policy_config.go       |  2 +-
- 7 files changed, 40 insertions(+), 16 deletions(-)
+ 7 files changed, 39 insertions(+), 15 deletions(-)
  create mode 100644 additionalfiles/policy.json
 
 diff --git a/Makefile b/Makefile
-index 015690220..c13388995 100644
+index cb230d8..4da4190 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -39,6 +39,7 @@ BINDIR ?= ${PREFIX}/bin
- LIBEXECDIR ?= ${PREFIX}/libexec
+@@ -42,6 +42,7 @@ LIBEXECDIR ?= ${PREFIX}/libexec
+ LIBEXECPODMAN ?= ${LIBEXECDIR}/podman
  MANDIR ?= ${PREFIX}/share/man
  SHAREDIR_CONTAINERS ?= ${PREFIX}/share/containers
 +DEFSHAREDIR_CONTAINERS ?= ${PREFIX}/share/defaults/containers
  ETCDIR ?= ${PREFIX}/etc
  TMPFILESDIR ?= ${PREFIX}/lib/tmpfiles.d
- SYSTEMDDIR ?= ${PREFIX}/lib/systemd/system
-@@ -668,7 +669,7 @@ package-install: package  ## Install rpm packages
+ MODULESLOADDIR ?= ${PREFIX}/lib/modules-load.d
+@@ -754,7 +755,7 @@ package-install: package  ## Install rpm packages
  	/usr/bin/podman info  # will catch a broken conmon
  
  .PHONY: install
@@ -36,7 +36,7 @@ index 015690220..c13388995 100644
  
  .PHONY: install.catatonit
  install.catatonit:
-@@ -807,6 +808,11 @@ install.libseccomp.sudo:
+@@ -900,6 +901,11 @@ install.libseccomp.sudo:
  	git clone https://github.com/seccomp/libseccomp ../../seccomp/libseccomp
  	cd ../../seccomp/libseccomp && git checkout --detach $(LIBSECCOMP_COMMIT) && ./autogen.sh && ./configure --prefix=/usr && make all && make install
  
@@ -50,7 +50,7 @@ index 015690220..c13388995 100644
  	for i in $(filter %.1,$(MANPAGES_DEST)); do \
 diff --git a/additionalfiles/policy.json b/additionalfiles/policy.json
 new file mode 100644
-index 000000000..dffc54a62
+index 0000000..dffc54a
 --- /dev/null
 +++ b/additionalfiles/policy.json
 @@ -0,0 +1,14 @@
@@ -69,10 +69,10 @@ index 000000000..dffc54a62
 +        }
 +}
 diff --git a/libpod/container_internal_linux.go b/libpod/container_internal_linux.go
-index eb05ca423..285311676 100644
+index afa351c..b66fc5f 100644
 --- a/libpod/container_internal_linux.go
 +++ b/libpod/container_internal_linux.go
-@@ -56,6 +56,10 @@ import (
+@@ -58,6 +58,10 @@ import (
  	"golang.org/x/sys/unix"
  )
  
@@ -83,7 +83,7 @@ index eb05ca423..285311676 100644
  func (c *Container) mountSHM(shmOptions string) error {
  	if err := unix.Mount("shm", c.config.ShmDir, "tmpfs", unix.MS_NOEXEC|unix.MS_NOSUID|unix.MS_NODEV,
  		label.FormatMountLabel(shmOptions, c.config.MountLabel)); err != nil {
-@@ -1572,11 +1576,11 @@ func (c *Container) makeBindMounts() error {
+@@ -1780,11 +1784,11 @@ func (c *Container) makeBindMounts() error {
  				}
  				delete(c.state.BindMounts, "/etc/resolv.conf")
  			}
@@ -97,7 +97,7 @@ index eb05ca423..285311676 100644
  			}
  		}
  
-@@ -1605,7 +1609,7 @@ func (c *Container) makeBindMounts() error {
+@@ -1813,7 +1817,7 @@ func (c *Container) makeBindMounts() error {
  
  			// check if dependency container has an /etc/hosts file.
  			// It may not have one, so only use it if it does.
@@ -106,7 +106,7 @@ index eb05ca423..285311676 100644
  			if !c.config.UseImageHosts && exists {
  				depCtr.lock.Lock()
  				// generate a hosts file for the dependency container,
-@@ -1620,7 +1624,7 @@ func (c *Container) makeBindMounts() error {
+@@ -1828,7 +1832,7 @@ func (c *Container) makeBindMounts() error {
  				depCtr.lock.Unlock()
  
  				// finally, save it in the new container
@@ -115,45 +115,46 @@ index eb05ca423..285311676 100644
  			}
  
  			if !hasCurrentUserMapped(c) {
-@@ -1641,16 +1645,16 @@ func (c *Container) makeBindMounts() error {
+@@ -1849,14 +1853,14 @@ func (c *Container) makeBindMounts() error {
  			}
  
  			if !c.config.UseImageHosts {
--				newHosts, err := c.generateHosts("/etc/hosts")
-+				newHosts, err := c.generateHosts(hostsFilePath)
- 				if err != nil {
+-				if err := c.updateHosts("/etc/hosts"); err != nil {
++				if err := c.updateHosts(hostsFilePath); err != nil {
  					return errors.Wrapf(err, "error creating hosts file for container %s", c.ID())
  				}
--				c.state.BindMounts["/etc/hosts"] = newHosts
-+				c.state.BindMounts[hostsFilePath] = newHosts
  			}
  		}
  
 -		if c.state.BindMounts["/etc/hosts"] != "" {
--			if err := label.Relabel(c.state.BindMounts["/etc/hosts"], c.config.MountLabel, true); err != nil {
+-			if err := c.relabel(c.state.BindMounts["/etc/hosts"], c.config.MountLabel, true); err != nil {
 +		if c.state.BindMounts[hostsFilePath] != "" {
-+			if err := label.Relabel(c.state.BindMounts[hostsFilePath], c.config.MountLabel, true); err != nil {
++			if err := c.relabel(c.state.BindMounts[hostsFilePath], c.config.MountLabel, true); err != nil {
  				return err
  			}
  		}
-@@ -1661,12 +1665,12 @@ func (c *Container) makeBindMounts() error {
+@@ -1867,8 +1871,8 @@ func (c *Container) makeBindMounts() error {
  			}
  		}
  	} else {
 -		if !c.config.UseImageHosts && c.state.BindMounts["/etc/hosts"] == "" {
--			newHosts, err := c.generateHosts("/etc/hosts")
+-			if err := c.updateHosts("/etc/hosts"); err != nil {
 +		if !c.config.UseImageHosts && c.state.BindMounts[hostsFilePath] == "" {
-+			newHosts, err := c.generateHosts(hostsFilePath)
- 			if err != nil {
++			if err := c.updateHosts(hostsFilePath); err != nil {
  				return errors.Wrapf(err, "error creating hosts file for container %s", c.ID())
  			}
--			c.state.BindMounts["/etc/hosts"] = newHosts
-+			c.state.BindMounts[hostsFilePath] = newHosts
  		}
+@@ -2273,7 +2277,7 @@ func (c *Container) updateHosts(path string) error {
+ 	if err != nil {
+ 		return err
  	}
+-	c.state.BindMounts["/etc/hosts"] = newHosts
++	c.state.BindMounts[hostsFilePath] = newHosts
+ 	return nil
+ }
  
 diff --git a/pkg/trust/trust.go b/pkg/trust/trust.go
-index 18a6a1717..57d50755c 100644
+index 584d1fa..0138c4d 100644
 --- a/pkg/trust/trust.go
 +++ b/pkg/trust/trust.go
 @@ -69,7 +69,7 @@ var userRegistriesDir = filepath.FromSlash(".config/containers/registries.d")
@@ -166,7 +167,7 @@ index 18a6a1717..57d50755c 100644
  		if sys.SignaturePolicyPath != "" {
  			return sys.SignaturePolicyPath
 diff --git a/vendor/github.com/containers/common/pkg/config/config.go b/vendor/github.com/containers/common/pkg/config/config.go
-index b78bcd74f..a8dbf54ee 100644
+index dd30abc..1e0acfb 100644
 --- a/vendor/github.com/containers/common/pkg/config/config.go
 +++ b/vendor/github.com/containers/common/pkg/config/config.go
 @@ -23,7 +23,7 @@ const (
@@ -179,10 +180,10 @@ index b78bcd74f..a8dbf54ee 100644
  	OverrideContainersConfig = "/etc/" + _configPath
  	// UserOverrideContainersConfig holds the containers config path overridden by the rootless user
 diff --git a/vendor/github.com/containers/common/pkg/config/default.go b/vendor/github.com/containers/common/pkg/config/default.go
-index bc88e5135..442ca6ff6 100644
+index 2791197..f80b0d9 100644
 --- a/vendor/github.com/containers/common/pkg/config/default.go
 +++ b/vendor/github.com/containers/common/pkg/config/default.go
-@@ -113,7 +113,7 @@ const (
+@@ -110,7 +110,7 @@ const (
  	DefaultPullPolicy = "missing"
  	// DefaultSignaturePolicyPath is the default value for the
  	// policy.json file.
@@ -192,7 +193,7 @@ index bc88e5135..442ca6ff6 100644
  	// network.
  	DefaultSubnet = "10.88.0.0/16"
 diff --git a/vendor/github.com/containers/image/v5/signature/policy_config.go b/vendor/github.com/containers/image/v5/signature/policy_config.go
-index 82fbb68cb..8b307233d 100644
+index 82fbb68..8b30723 100644
 --- a/vendor/github.com/containers/image/v5/signature/policy_config.go
 +++ b/vendor/github.com/containers/image/v5/signature/policy_config.go
 @@ -35,7 +35,7 @@ var systemDefaultPolicyPath = builtinDefaultPolicyPath
@@ -205,5 +206,5 @@ index 82fbb68cb..8b307233d 100644
  // userPolicyFile is the path to the per user policy path.
  var userPolicyFile = filepath.FromSlash(".config/containers/policy.json")
 -- 
-2.35.0
+2.35.1
 
