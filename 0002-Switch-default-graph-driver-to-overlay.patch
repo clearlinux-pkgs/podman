@@ -1,0 +1,33 @@
+From 8b8d5133ea4cf764260883c3c7345e3bf74fa995 Mon Sep 17 00:00:00 2001
+From: Ganesh Maharaj Mahalingam <ganesh.mahalingam@intel.com>
+Date: Fri, 25 Mar 2022 09:40:51 -0700
+Subject: [PATCH 2/2] Switch default graph driver to overlay
+
+podman will be primarily used rootless and given they recommend using
+overlay as the default graphdriver for rootless, we might as well set
+that as the default.
+
+This also fixes the error.
+ERRO[0000] User-selected graph driver "overlay" overwritten by graph driver "vfs" from database - delete libpod local files to resolve
+
+Signed-off-by: Ganesh Maharaj Mahalingam <ganesh.mahalingam@intel.com>
+---
+ vendor/github.com/containers/storage/types/options.go | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/vendor/github.com/containers/storage/types/options.go b/vendor/github.com/containers/storage/types/options.go
+index ad8377d..54fd966 100644
+--- a/vendor/github.com/containers/storage/types/options.go
++++ b/vendor/github.com/containers/storage/types/options.go
+@@ -248,7 +248,7 @@ func getRootlessStorageOpts(rootlessUID int, systemOpts StoreOptions) (StoreOpti
+ 		}
+ 	}
+ 	if opts.GraphDriverName == "" {
+-		opts.GraphDriverName = "vfs"
++		opts.GraphDriverName = "overlay"
+ 	}
+ 
+ 	if os.Getenv("STORAGE_OPTS") != "" {
+-- 
+2.35.1
+

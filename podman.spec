@@ -4,7 +4,7 @@
 #
 Name     : podman
 Version  : 4.0.2
-Release  : 18
+Release  : 19
 URL      : https://github.com/containers/podman/archive/refs/tags/v4.0.2.tar.gz
 Source0  : https://github.com/containers/podman/archive/refs/tags/v4.0.2.tar.gz
 Summary  : Builds Dockerfile using the Docker client
@@ -27,6 +27,7 @@ BuildRequires : gpgme-dev
 BuildRequires : pkgconfig(libseccomp)
 BuildRequires : systemd-dev
 Patch1: 0001-Enable-stateless.patch
+Patch2: 0002-Switch-default-graph-driver-to-overlay.patch
 
 %description
 Builds Dockerfile using the Docker client
@@ -98,13 +99,14 @@ services components for the podman package.
 %setup -q -n podman-4.0.2
 cd %{_builddir}/podman-4.0.2
 %patch1 -p1
+%patch2 -p1
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1648183633
+export SOURCE_DATE_EPOCH=1648226685
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -117,7 +119,7 @@ make  %{?_smp_mflags}  PREFIX=/usr
 
 
 %install
-export SOURCE_DATE_EPOCH=1648183633
+export SOURCE_DATE_EPOCH=1648226685
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/podman
 cp %{_builddir}/podman-4.0.2/LICENSE %{buildroot}/usr/share/package-licenses/podman/ddb5ce16d6184c36bffbf19074f58c3fddf6d399
