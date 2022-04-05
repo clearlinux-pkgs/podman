@@ -1,7 +1,7 @@
-From 39131b8845541785eb0125d2e114d8da7dbebae6 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Ganesh Maharaj Mahalingam <ganesh.mahalingam@intel.com>
 Date: Thu, 24 Mar 2022 21:44:59 -0700
-Subject: [PATCH 1/2] Enable stateless
+Subject: [PATCH] Enable stateless
 
 Signed-off-by: Ganesh Maharaj Mahalingam <ganesh.mahalingam@intel.com>
 ---
@@ -16,7 +16,7 @@ Signed-off-by: Ganesh Maharaj Mahalingam <ganesh.mahalingam@intel.com>
  create mode 100644 additionalfiles/policy.json
 
 diff --git a/Makefile b/Makefile
-index cb230d8..4da4190 100644
+index 99a4e6f..4617827 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -42,6 +42,7 @@ LIBEXECDIR ?= ${PREFIX}/libexec
@@ -27,7 +27,7 @@ index cb230d8..4da4190 100644
  ETCDIR ?= ${PREFIX}/etc
  TMPFILESDIR ?= ${PREFIX}/lib/tmpfiles.d
  MODULESLOADDIR ?= ${PREFIX}/lib/modules-load.d
-@@ -754,7 +755,7 @@ package-install: package  ## Install rpm packages
+@@ -757,7 +758,7 @@ package-install: package  ## Install rpm packages
  	/usr/bin/podman info  # will catch a broken conmon
  
  .PHONY: install
@@ -36,7 +36,7 @@ index cb230d8..4da4190 100644
  
  .PHONY: install.catatonit
  install.catatonit:
-@@ -900,6 +901,11 @@ install.libseccomp.sudo:
+@@ -903,6 +904,11 @@ install.libseccomp.sudo:
  	git clone https://github.com/seccomp/libseccomp ../../seccomp/libseccomp
  	cd ../../seccomp/libseccomp && git checkout --detach $(LIBSECCOMP_COMMIT) && ./autogen.sh && ./configure --prefix=/usr && make all && make install
  
@@ -69,7 +69,7 @@ index 0000000..dffc54a
 +        }
 +}
 diff --git a/libpod/container_internal_linux.go b/libpod/container_internal_linux.go
-index afa351c..b66fc5f 100644
+index f7c8c19..6864f3d 100644
 --- a/libpod/container_internal_linux.go
 +++ b/libpod/container_internal_linux.go
 @@ -58,6 +58,10 @@ import (
@@ -83,7 +83,7 @@ index afa351c..b66fc5f 100644
  func (c *Container) mountSHM(shmOptions string) error {
  	if err := unix.Mount("shm", c.config.ShmDir, "tmpfs", unix.MS_NOEXEC|unix.MS_NOSUID|unix.MS_NODEV,
  		label.FormatMountLabel(shmOptions, c.config.MountLabel)); err != nil {
-@@ -1780,11 +1784,11 @@ func (c *Container) makeBindMounts() error {
+@@ -1836,11 +1840,11 @@ func (c *Container) makeBindMounts() error {
  				}
  				delete(c.state.BindMounts, "/etc/resolv.conf")
  			}
@@ -97,7 +97,7 @@ index afa351c..b66fc5f 100644
  			}
  		}
  
-@@ -1813,7 +1817,7 @@ func (c *Container) makeBindMounts() error {
+@@ -1869,7 +1873,7 @@ func (c *Container) makeBindMounts() error {
  
  			// check if dependency container has an /etc/hosts file.
  			// It may not have one, so only use it if it does.
@@ -106,7 +106,7 @@ index afa351c..b66fc5f 100644
  			if !c.config.UseImageHosts && exists {
  				depCtr.lock.Lock()
  				// generate a hosts file for the dependency container,
-@@ -1828,7 +1832,7 @@ func (c *Container) makeBindMounts() error {
+@@ -1884,7 +1888,7 @@ func (c *Container) makeBindMounts() error {
  				depCtr.lock.Unlock()
  
  				// finally, save it in the new container
@@ -115,7 +115,7 @@ index afa351c..b66fc5f 100644
  			}
  
  			if !hasCurrentUserMapped(c) {
-@@ -1849,14 +1853,14 @@ func (c *Container) makeBindMounts() error {
+@@ -1905,14 +1909,14 @@ func (c *Container) makeBindMounts() error {
  			}
  
  			if !c.config.UseImageHosts {
@@ -133,7 +133,7 @@ index afa351c..b66fc5f 100644
  				return err
  			}
  		}
-@@ -1867,8 +1871,8 @@ func (c *Container) makeBindMounts() error {
+@@ -1923,8 +1927,8 @@ func (c *Container) makeBindMounts() error {
  			}
  		}
  	} else {
@@ -144,7 +144,7 @@ index afa351c..b66fc5f 100644
  				return errors.Wrapf(err, "error creating hosts file for container %s", c.ID())
  			}
  		}
-@@ -2273,7 +2277,7 @@ func (c *Container) updateHosts(path string) error {
+@@ -2329,7 +2333,7 @@ func (c *Container) updateHosts(path string) error {
  	if err != nil {
  		return err
  	}
@@ -205,6 +205,3 @@ index 82fbb68..8b30723 100644
  
  // userPolicyFile is the path to the per user policy path.
  var userPolicyFile = filepath.FromSlash(".config/containers/policy.json")
--- 
-2.35.1
-
