@@ -4,7 +4,7 @@
 #
 Name     : podman
 Version  : 4.1.1
-Release  : 26
+Release  : 27
 URL      : https://github.com/containers/podman/archive/refs/tags/v4.1.1.tar.gz
 Source0  : https://github.com/containers/podman/archive/refs/tags/v4.1.1.tar.gz
 Summary  : Builds Dockerfile using the Docker client
