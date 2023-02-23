@@ -4,7 +4,7 @@
 #
 Name     : podman
 Version  : 4.3.1
-Release  : 34
+Release  : 35
 URL      : https://github.com/containers/podman/archive/v4.3.1/podman-4.3.1.tar.gz
 Source0  : https://github.com/containers/podman/archive/v4.3.1/podman-4.3.1.tar.gz
 Summary  : Builds Dockerfile using the Docker client
@@ -27,6 +27,9 @@ BuildRequires : golang-github-cpuguy83-go-md2man
 BuildRequires : gpgme-dev
 BuildRequires : pkgconfig(libseccomp)
 BuildRequires : systemd-dev
+# Suppress stripping binaries
+%define __strip /bin/true
+%define debug_package %{nil}
 Patch1: 0001-Enable-stateless.patch
 Patch2: 0002-Switch-default-graph-driver-to-overlay.patch
 
@@ -103,24 +106,27 @@ cd %{_builddir}/podman-4.3.1
 %patch2 -p1
 
 %build
+## build_prepend content
+unset CLEAR_DEBUG_TERSE
+## build_prepend end
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1669154019
+export SOURCE_DATE_EPOCH=1677181633
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
-export CFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=auto "
-export FCFLAGS="$FFLAGS -O3 -ffat-lto-objects -flto=auto "
-export FFLAGS="$FFLAGS -O3 -ffat-lto-objects -flto=auto "
-export CXXFLAGS="$CXXFLAGS -O3 -ffat-lto-objects -flto=auto "
+export CFLAGS="$CFLAGS -O3 -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -flto=auto -g1 -gno-column-info -gno-variable-location-views -gz "
+export FCFLAGS="$FFLAGS -O3 -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -flto=auto -g1 -gno-column-info -gno-variable-location-views -gz "
+export FFLAGS="$FFLAGS -O3 -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -flto=auto -g1 -gno-column-info -gno-variable-location-views -gz "
+export CXXFLAGS="$CXXFLAGS -O3 -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -flto=auto -g1 -gno-column-info -gno-variable-location-views -gz "
 make  %{?_smp_mflags}  PREFIX=/usr
 
 
 %install
-export SOURCE_DATE_EPOCH=1669154019
+export SOURCE_DATE_EPOCH=1677181633
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/podman
 cp %{_builddir}/podman-%{version}/LICENSE %{buildroot}/usr/share/package-licenses/podman/ddb5ce16d6184c36bffbf19074f58c3fddf6d399 || :
