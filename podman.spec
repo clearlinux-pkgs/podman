@@ -4,10 +4,10 @@
 # Using build pattern: make
 #
 Name     : podman
-Version  : 4.4.3
-Release  : 37
-URL      : https://github.com/containers/podman/archive/v4.4.3/podman-4.4.3.tar.gz
-Source0  : https://github.com/containers/podman/archive/v4.4.3/podman-4.4.3.tar.gz
+Version  : 4.4.4
+Release  : 38
+URL      : https://github.com/containers/podman/archive/v4.4.4/podman-4.4.4.tar.gz
+Source0  : https://github.com/containers/podman/archive/v4.4.4/podman-4.4.4.tar.gz
 Summary  : Builds Dockerfile using the Docker client
 Group    : Development/Tools
 License  : Apache-2.0 BSD-2-Clause BSD-3-Clause CC-BY-SA-4.0 ISC MIT MPL-2.0 MPL-2.0-no-copyleft-exception Unlicense
@@ -100,8 +100,8 @@ services components for the podman package.
 
 
 %prep
-%setup -q -n podman-4.4.3
-cd %{_builddir}/podman-4.4.3
+%setup -q -n podman-4.4.4
+cd %{_builddir}/podman-4.4.4
 %patch1 -p1
 %patch2 -p1
 
@@ -113,7 +113,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1679888963
+export SOURCE_DATE_EPOCH=1679958767
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -126,7 +126,7 @@ make  %{?_smp_mflags}  PREFIX=/usr
 
 
 %install
-export SOURCE_DATE_EPOCH=1679888963
+export SOURCE_DATE_EPOCH=1679958767
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/podman
 cp %{_builddir}/podman-%{version}/LICENSE %{buildroot}/usr/share/package-licenses/podman/ddb5ce16d6184c36bffbf19074f58c3fddf6d399 || :
