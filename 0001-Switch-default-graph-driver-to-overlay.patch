@@ -1,7 +1,7 @@
 From d614a2107950788725fb72181ca40af0cb8957bd Mon Sep 17 00:00:00 2001
 From: William Douglas <william.douglas@intel.com>
 Date: Sun, 26 Mar 2023 20:25:28 -0700
-Subject: [PATCH 2/2] Switch default graph driver to overlay
+Subject: [PATCH] Switch default graph driver to overlay
 
 podman will be primarily used rootless and given they recommend using
 overlay as the default graphdriver for rootless, we might as well set
