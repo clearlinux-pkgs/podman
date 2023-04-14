@@ -4,10 +4,10 @@
 # Using build pattern: make
 #
 Name     : podman
-Version  : 4.4.4
-Release  : 39
-URL      : https://github.com/containers/podman/archive/v4.4.4/podman-4.4.4.tar.gz
-Source0  : https://github.com/containers/podman/archive/v4.4.4/podman-4.4.4.tar.gz
+Version  : 4.5.0
+Release  : 40
+URL      : https://github.com/containers/podman/archive/v4.5.0/podman-4.5.0.tar.gz
+Source0  : https://github.com/containers/podman/archive/v4.5.0/podman-4.5.0.tar.gz
 Summary  : Builds Dockerfile using the Docker client
 Group    : Development/Tools
 License  : Apache-2.0 BSD-2-Clause BSD-3-Clause CC-BY-SA-4.0 ISC MIT MPL-2.0 MPL-2.0-no-copyleft-exception Unlicense
@@ -94,14 +94,15 @@ man components for the podman package.
 %package services
 Summary: services components for the podman package.
 Group: Systemd services
+Requires: systemd
 
 %description services
 services components for the podman package.
 
 
 %prep
-%setup -q -n podman-4.4.4
-cd %{_builddir}/podman-4.4.4
+%setup -q -n podman-4.5.0
+cd %{_builddir}/podman-4.5.0
 %patch1 -p1
 %patch2 -p1
 
@@ -113,7 +114,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1679958767
+export SOURCE_DATE_EPOCH=1681491095
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -126,7 +127,7 @@ make  %{?_smp_mflags}  PREFIX=/usr
 
 
 %install
-export SOURCE_DATE_EPOCH=1679958767
+export SOURCE_DATE_EPOCH=1681491095
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/podman
 cp %{_builddir}/podman-%{version}/LICENSE %{buildroot}/usr/share/package-licenses/podman/ddb5ce16d6184c36bffbf19074f58c3fddf6d399 || :
@@ -138,7 +139,6 @@ cp %{_builddir}/podman-%{version}/test/tools/vendor/github.com/cpuguy83/go-md2ma
 cp %{_builddir}/podman-%{version}/test/tools/vendor/github.com/fsnotify/fsnotify/LICENSE %{buildroot}/usr/share/package-licenses/podman/66a9502ecba0bae239ca6ba2c3e8a2fe5558a893 || :
 cp %{_builddir}/podman-%{version}/test/tools/vendor/github.com/go-task/slim-sprig/LICENSE.txt %{buildroot}/usr/share/package-licenses/podman/535e3badf5b532d842627b504976fbb93bc2d8b8 || :
 cp %{_builddir}/podman-%{version}/test/tools/vendor/github.com/hashicorp/go-version/LICENSE %{buildroot}/usr/share/package-licenses/podman/523489384296f403da31edf8edf6f9023d328517 || :
-cp %{_builddir}/podman-%{version}/test/tools/vendor/github.com/konsorten/go-windows-terminal-sequences/LICENSE %{buildroot}/usr/share/package-licenses/podman/e2ee43b586677eaafd7dd7af25adff48adfa7cf3 || :
 cp %{_builddir}/podman-%{version}/test/tools/vendor/github.com/nxadm/tail/LICENSE %{buildroot}/usr/share/package-licenses/podman/a792f3e236631b46c9ea1a9f86ab3a6c24b17c89 || :
 cp %{_builddir}/podman-%{version}/test/tools/vendor/github.com/nxadm/tail/ratelimiter/Licence %{buildroot}/usr/share/package-licenses/podman/15e225f105ead05a4d06cdf7723bb6ec11e92304 || :
 cp %{_builddir}/podman-%{version}/test/tools/vendor/github.com/onsi/ginkgo/LICENSE %{buildroot}/usr/share/package-licenses/podman/9f1b6690bcfc732123ae209c90c62f2ba80dfcb0 || :
@@ -174,6 +174,7 @@ cp %{_builddir}/podman-%{version}/vendor/github.com/containers/common/LICENSE %{
 cp %{_builddir}/podman-%{version}/vendor/github.com/containers/common/pkg/report/camelcase/LICENSE.md %{buildroot}/usr/share/package-licenses/podman/2afef5b6ec0b4453f0b1d7afac0b97168620aa84 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/containers/conmon/LICENSE %{buildroot}/usr/share/package-licenses/podman/147d5d72b02467b04653ff37be85b8e201e9af66 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/containers/image/v5/LICENSE %{buildroot}/usr/share/package-licenses/podman/3037fadf4c833d13c87fcd0b2f932de187edf676 || :
+cp %{_builddir}/podman-%{version}/vendor/github.com/containers/libhvee/LICENSE %{buildroot}/usr/share/package-licenses/podman/7df059597099bb7dcf25d2a9aedfaf4465f72d8d || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/containers/libtrust/LICENSE %{buildroot}/usr/share/package-licenses/podman/8ff574408142cd6bbb2a1b83302de24cb7b35e8b || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/containers/ocicrypt/LICENSE %{buildroot}/usr/share/package-licenses/podman/3037fadf4c833d13c87fcd0b2f932de187edf676 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/containers/psgo/LICENSE %{buildroot}/usr/share/package-licenses/podman/7df059597099bb7dcf25d2a9aedfaf4465f72d8d || :
@@ -201,9 +202,11 @@ cp %{_builddir}/podman-%{version}/vendor/github.com/felixge/httpsnoop/LICENSE.tx
 cp %{_builddir}/podman-%{version}/vendor/github.com/fsnotify/fsnotify/LICENSE %{buildroot}/usr/share/package-licenses/podman/135191231608cd88684768718b8a2f439c9e1817 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/fsouza/go-dockerclient/DOCKER-LICENSE %{buildroot}/usr/share/package-licenses/podman/2516d156cb93ae7b1f855b09e76c44f04fbdb689 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/fsouza/go-dockerclient/LICENSE %{buildroot}/usr/share/package-licenses/podman/24edd24d0fa453e780367c0ae9c1aa8bce72c6c1 || :
-cp %{_builddir}/podman-%{version}/vendor/github.com/ghodss/yaml/LICENSE %{buildroot}/usr/share/package-licenses/podman/271aeaf56ee621c5accfc2a9db0b10717e038eaf || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/go-jose/go-jose/v3/LICENSE %{buildroot}/usr/share/package-licenses/podman/2b8b815229aa8a61e483fb4ba0588b8b6c491890 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/go-jose/go-jose/v3/json/LICENSE %{buildroot}/usr/share/package-licenses/podman/7f7a12bcfc16fab2522aa1a562fd3d2aee429d3b || :
+cp %{_builddir}/podman-%{version}/vendor/github.com/go-logr/logr/LICENSE %{buildroot}/usr/share/package-licenses/podman/92170cdc034b2ff819323ff670d3b7266c8bffcd || :
+cp %{_builddir}/podman-%{version}/vendor/github.com/go-logr/stdr/LICENSE %{buildroot}/usr/share/package-licenses/podman/7df059597099bb7dcf25d2a9aedfaf4465f72d8d || :
+cp %{_builddir}/podman-%{version}/vendor/github.com/go-ole/go-ole/LICENSE %{buildroot}/usr/share/package-licenses/podman/565471fdf06cfb21b7c69c5fc329a1341d5d9ad0 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/go-openapi/analysis/LICENSE %{buildroot}/usr/share/package-licenses/podman/2b8b815229aa8a61e483fb4ba0588b8b6c491890 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/go-openapi/errors/LICENSE %{buildroot}/usr/share/package-licenses/podman/2b8b815229aa8a61e483fb4ba0588b8b6c491890 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/go-openapi/jsonpointer/LICENSE %{buildroot}/usr/share/package-licenses/podman/2b8b815229aa8a61e483fb4ba0588b8b6c491890 || :
@@ -254,11 +257,13 @@ cp %{_builddir}/podman-%{version}/vendor/github.com/mailru/easyjson/LICENSE %{bu
 cp %{_builddir}/podman-%{version}/vendor/github.com/manifoldco/promptui/LICENSE.md %{buildroot}/usr/share/package-licenses/podman/86e41414e009c87b1cfed9964aead787f4ef3ed0 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/mattn/go-runewidth/LICENSE %{buildroot}/usr/share/package-licenses/podman/5ca808f075931c5322193d4afd5a3370c824f810 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/mattn/go-shellwords/LICENSE %{buildroot}/usr/share/package-licenses/podman/f7f33fde14de785a3ac53f250bb746ba30844639 || :
+cp %{_builddir}/podman-%{version}/vendor/github.com/mattn/go-sqlite3/LICENSE %{buildroot}/usr/share/package-licenses/podman/0e280ff033260ad31cab00d9e8077dab27bc35af || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/miekg/pkcs11/LICENSE %{buildroot}/usr/share/package-licenses/podman/a347f428584b1ae13a669c007351ba7885597d59 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/mistifyio/go-zfs/v3/LICENSE %{buildroot}/usr/share/package-licenses/podman/b3c529b8fb7f1d56db7381bc7ef5f481ea2ac2a4 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/mitchellh/mapstructure/LICENSE %{buildroot}/usr/share/package-licenses/podman/5ad2002bc8d2b22e2034867d159f71ba6258e18f || :
-cp %{_builddir}/podman-%{version}/vendor/github.com/moby/sys/mount/LICENSE %{buildroot}/usr/share/package-licenses/podman/2b8b815229aa8a61e483fb4ba0588b8b6c491890 || :
+cp %{_builddir}/podman-%{version}/vendor/github.com/moby/patternmatcher/LICENSE %{buildroot}/usr/share/package-licenses/podman/20b06a68cf65738d43afa04acce0126f341c77f8 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/moby/sys/mountinfo/LICENSE %{buildroot}/usr/share/package-licenses/podman/2b8b815229aa8a61e483fb4ba0588b8b6c491890 || :
+cp %{_builddir}/podman-%{version}/vendor/github.com/moby/sys/sequential/LICENSE %{buildroot}/usr/share/package-licenses/podman/2b8b815229aa8a61e483fb4ba0588b8b6c491890 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/moby/term/LICENSE %{buildroot}/usr/share/package-licenses/podman/20b06a68cf65738d43afa04acce0126f341c77f8 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/modern-go/concurrent/LICENSE %{buildroot}/usr/share/package-licenses/podman/7df059597099bb7dcf25d2a9aedfaf4465f72d8d || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/modern-go/reflect2/LICENSE %{buildroot}/usr/share/package-licenses/podman/7df059597099bb7dcf25d2a9aedfaf4465f72d8d || :
@@ -301,24 +306,23 @@ cp %{_builddir}/podman-%{version}/vendor/github.com/spf13/cobra/LICENSE.txt %{bu
 cp %{_builddir}/podman-%{version}/vendor/github.com/spf13/pflag/LICENSE %{buildroot}/usr/share/package-licenses/podman/b3c86ae465b21f7323059db335158b48187731c7 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/stefanberger/go-pkcs11uri/LICENSE %{buildroot}/usr/share/package-licenses/podman/c5c8a68f4b80929b3e66f054f37bb9e16078847f || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/stretchr/testify/LICENSE %{buildroot}/usr/share/package-licenses/podman/892204393ca075d09c8b1c1d880aba1ae0a2b805 || :
-cp %{_builddir}/podman-%{version}/vendor/github.com/sylabs/sif/v2/LICENSE.md %{buildroot}/usr/share/package-licenses/podman/58acf0278388b5bddacd4994ad56b9119024416b || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/syndtr/gocapability/LICENSE %{buildroot}/usr/share/package-licenses/podman/a44bfde22babd7c7e1ccac9ca31f85a09358769f || :
-cp %{_builddir}/podman-%{version}/vendor/github.com/tchap/go-patricia/LICENSE %{buildroot}/usr/share/package-licenses/podman/7d3d6e2c0e14d20f475edae2f3936c574809efd5 || :
+cp %{_builddir}/podman-%{version}/vendor/github.com/tchap/go-patricia/v2/LICENSE %{buildroot}/usr/share/package-licenses/podman/7d3d6e2c0e14d20f475edae2f3936c574809efd5 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/theupdateframework/go-tuf/LICENSE %{buildroot}/usr/share/package-licenses/podman/62ccba312ed46c6899bb2467365cea7397b347d4 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/titanous/rocacheck/LICENSE %{buildroot}/usr/share/package-licenses/podman/51c8ee1f4a6ab95d973e4bf81149cc30fbbc1d57 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/uber/jaeger-client-go/LICENSE %{buildroot}/usr/share/package-licenses/podman/7df059597099bb7dcf25d2a9aedfaf4465f72d8d || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/vbatts/tar-split/LICENSE %{buildroot}/usr/share/package-licenses/podman/40759db9edbb7fe30b64cc213f4f20c4618e2932 || :
-cp %{_builddir}/podman-%{version}/vendor/github.com/vbauerster/mpb/v7/UNLICENSE %{buildroot}/usr/share/package-licenses/podman/ff007ce11f3ff7964f1a5b04202c4e95b5c82c85 || :
+cp %{_builddir}/podman-%{version}/vendor/github.com/vbauerster/mpb/v8/UNLICENSE %{buildroot}/usr/share/package-licenses/podman/ff007ce11f3ff7964f1a5b04202c4e95b5c82c85 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/vishvananda/netlink/LICENSE %{buildroot}/usr/share/package-licenses/podman/f88291c879c4ee329bfa341b54eaedd29d3058cf || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/vishvananda/netns/LICENSE %{buildroot}/usr/share/package-licenses/podman/f88291c879c4ee329bfa341b54eaedd29d3058cf || :
-cp %{_builddir}/podman-%{version}/vendor/github.com/xeipuuv/gojsonpointer/LICENSE-APACHE-2.0.txt %{buildroot}/usr/share/package-licenses/podman/b7173385030ef97bce57b5b4b78b48763c83aed3 || :
-cp %{_builddir}/podman-%{version}/vendor/github.com/xeipuuv/gojsonreference/LICENSE-APACHE-2.0.txt %{buildroot}/usr/share/package-licenses/podman/b7173385030ef97bce57b5b4b78b48763c83aed3 || :
-cp %{_builddir}/podman-%{version}/vendor/github.com/xeipuuv/gojsonschema/LICENSE-APACHE-2.0.txt %{buildroot}/usr/share/package-licenses/podman/b7173385030ef97bce57b5b4b78b48763c83aed3 || :
 cp %{_builddir}/podman-%{version}/vendor/go.etcd.io/bbolt/LICENSE %{buildroot}/usr/share/package-licenses/podman/66c5c002958b1f31f74410b353972d622d74e007 || :
 cp %{_builddir}/podman-%{version}/vendor/go.mongodb.org/mongo-driver/LICENSE %{buildroot}/usr/share/package-licenses/podman/7df059597099bb7dcf25d2a9aedfaf4465f72d8d || :
 cp %{_builddir}/podman-%{version}/vendor/go.mozilla.org/pkcs7/LICENSE %{buildroot}/usr/share/package-licenses/podman/f9bbe972432aebdebf3469c89434273ba88ec9c7 || :
 cp %{_builddir}/podman-%{version}/vendor/go.opencensus.io/LICENSE %{buildroot}/usr/share/package-licenses/podman/1128f8f91104ba9ef98d37eea6523a888dcfa5de || :
+cp %{_builddir}/podman-%{version}/vendor/go.opentelemetry.io/otel/LICENSE %{buildroot}/usr/share/package-licenses/podman/7df059597099bb7dcf25d2a9aedfaf4465f72d8d || :
+cp %{_builddir}/podman-%{version}/vendor/go.opentelemetry.io/otel/trace/LICENSE %{buildroot}/usr/share/package-licenses/podman/7df059597099bb7dcf25d2a9aedfaf4465f72d8d || :
 cp %{_builddir}/podman-%{version}/vendor/golang.org/x/crypto/LICENSE %{buildroot}/usr/share/package-licenses/podman/d6a5f1ecaedd723c325a2063375b3517e808a2b5 || :
+cp %{_builddir}/podman-%{version}/vendor/golang.org/x/exp/LICENSE %{buildroot}/usr/share/package-licenses/podman/d6a5f1ecaedd723c325a2063375b3517e808a2b5 || :
 cp %{_builddir}/podman-%{version}/vendor/golang.org/x/mod/LICENSE %{buildroot}/usr/share/package-licenses/podman/d6a5f1ecaedd723c325a2063375b3517e808a2b5 || :
 cp %{_builddir}/podman-%{version}/vendor/golang.org/x/net/LICENSE %{buildroot}/usr/share/package-licenses/podman/d6a5f1ecaedd723c325a2063375b3517e808a2b5 || :
 cp %{_builddir}/podman-%{version}/vendor/golang.org/x/oauth2/LICENSE %{buildroot}/usr/share/package-licenses/podman/d6a5f1ecaedd723c325a2063375b3517e808a2b5 || :
@@ -331,6 +335,8 @@ cp %{_builddir}/podman-%{version}/vendor/google.golang.org/appengine/LICENSE %{b
 cp %{_builddir}/podman-%{version}/vendor/google.golang.org/genproto/LICENSE %{buildroot}/usr/share/package-licenses/podman/2b8b815229aa8a61e483fb4ba0588b8b6c491890 || :
 cp %{_builddir}/podman-%{version}/vendor/google.golang.org/grpc/LICENSE %{buildroot}/usr/share/package-licenses/podman/2b8b815229aa8a61e483fb4ba0588b8b6c491890 || :
 cp %{_builddir}/podman-%{version}/vendor/google.golang.org/protobuf/LICENSE %{buildroot}/usr/share/package-licenses/podman/74850a25a5319bdddc0d998eb8926c18bada282b || :
+cp %{_builddir}/podman-%{version}/vendor/gopkg.in/go-jose/go-jose.v2/LICENSE %{buildroot}/usr/share/package-licenses/podman/2b8b815229aa8a61e483fb4ba0588b8b6c491890 || :
+cp %{_builddir}/podman-%{version}/vendor/gopkg.in/go-jose/go-jose.v2/json/LICENSE %{buildroot}/usr/share/package-licenses/podman/7f7a12bcfc16fab2522aa1a562fd3d2aee429d3b || :
 cp %{_builddir}/podman-%{version}/vendor/gopkg.in/inf.v0/LICENSE %{buildroot}/usr/share/package-licenses/podman/580c0a1f1386fe13bce395d23bdaf3b14ae2e20b || :
 cp %{_builddir}/podman-%{version}/vendor/gopkg.in/square/go-jose.v2/LICENSE %{buildroot}/usr/share/package-licenses/podman/2b8b815229aa8a61e483fb4ba0588b8b6c491890 || :
 cp %{_builddir}/podman-%{version}/vendor/gopkg.in/square/go-jose.v2/json/LICENSE %{buildroot}/usr/share/package-licenses/podman/7f7a12bcfc16fab2522aa1a562fd3d2aee429d3b || :
@@ -371,6 +377,7 @@ cp %{_builddir}/podman-%{version}/vendor/sigs.k8s.io/yaml/LICENSE %{buildroot}/u
 /usr/share/package-licenses/podman/0506fb9753d7d7b8e2e7dec43a93c22e052f32b5
 /usr/share/package-licenses/podman/06b27345acae9303e13dde9974d2b2e318b05989
 /usr/share/package-licenses/podman/08021ae73f58f423dd6e7b525e81cf2520f7619e
+/usr/share/package-licenses/podman/0e280ff033260ad31cab00d9e8077dab27bc35af
 /usr/share/package-licenses/podman/0e8f2042647b8140e79c4eb7d233d1b39231db09
 /usr/share/package-licenses/podman/1128f8f91104ba9ef98d37eea6523a888dcfa5de
 /usr/share/package-licenses/podman/11a8fec351554e8f6c3f4dac5a1f4049dd467ba8
@@ -410,10 +417,10 @@ cp %{_builddir}/podman-%{version}/vendor/sigs.k8s.io/yaml/LICENSE %{buildroot}/u
 /usr/share/package-licenses/podman/5476f2f91673ef040f1956907e7f45e72d5e11ee
 /usr/share/package-licenses/podman/552b909d29bd260c886142a969b462c85f976dcd
 /usr/share/package-licenses/podman/554fb441fbb1607579b7c9f8e9d7fab5d00e3a51
+/usr/share/package-licenses/podman/565471fdf06cfb21b7c69c5fc329a1341d5d9ad0
 /usr/share/package-licenses/podman/56b820712432e458f05f883566ca8cd85dcdaad5
 /usr/share/package-licenses/podman/57f2307e38c6e9af9958e3be89f49192220379fa
 /usr/share/package-licenses/podman/580c0a1f1386fe13bce395d23bdaf3b14ae2e20b
-/usr/share/package-licenses/podman/58acf0278388b5bddacd4994ad56b9119024416b
 /usr/share/package-licenses/podman/5a3d2a3dd0e3ff34083dd46d12cb4d8d579cfc24
 /usr/share/package-licenses/podman/5ad2002bc8d2b22e2034867d159f71ba6258e18f
 /usr/share/package-licenses/podman/5b53018d7f0706e49275a92d36b54cfbfbb71367
@@ -463,7 +470,6 @@ cp %{_builddir}/podman-%{version}/vendor/sigs.k8s.io/yaml/LICENSE %{buildroot}/u
 /usr/share/package-licenses/podman/b3c529b8fb7f1d56db7381bc7ef5f481ea2ac2a4
 /usr/share/package-licenses/podman/b3c86ae465b21f7323059db335158b48187731c7
 /usr/share/package-licenses/podman/b679c8b9f60acc46c32df434424016dc38d85e03
-/usr/share/package-licenses/podman/b7173385030ef97bce57b5b4b78b48763c83aed3
 /usr/share/package-licenses/podman/b74b3b31bc15ad5e94fc1947d682aa3d84132fce
 /usr/share/package-licenses/podman/b7a606730713ac061594edab33cf941704b4a95c
 /usr/share/package-licenses/podman/b7b97d84a5f0b778ab971d2afce44f47c8b6e80a
@@ -484,7 +490,6 @@ cp %{_builddir}/podman-%{version}/vendor/sigs.k8s.io/yaml/LICENSE %{buildroot}/u
 /usr/share/package-licenses/podman/da34754c05d40ff81f91de8c1b85ea6e5503e21d
 /usr/share/package-licenses/podman/dd59a81b4235f5df8d511168eaaafb30ed88bc71
 /usr/share/package-licenses/podman/ddb5ce16d6184c36bffbf19074f58c3fddf6d399
-/usr/share/package-licenses/podman/e2ee43b586677eaafd7dd7af25adff48adfa7cf3
 /usr/share/package-licenses/podman/eecfc0c7e0930c6ba1ed0ff2d46a0a6fa0d16d6c
 /usr/share/package-licenses/podman/f3eab54cb1736b419ef75b8c44bea2b17614bd31
 /usr/share/package-licenses/podman/f56166bca39792bf49347c6636ce5a9b6dbf3657
@@ -600,6 +605,8 @@ cp %{_builddir}/podman-%{version}/vendor/sigs.k8s.io/yaml/LICENSE %{buildroot}/u
 /usr/share/man/man1/podman-machine-inspect.1
 /usr/share/man/man1/podman-machine-list.1
 /usr/share/man/man1/podman-machine-ls.1
+/usr/share/man/man1/podman-machine-os-apply.1
+/usr/share/man/man1/podman-machine-os.1
 /usr/share/man/man1/podman-machine-rm.1
 /usr/share/man/man1/podman-machine-set.1
 /usr/share/man/man1/podman-machine-ssh.1
@@ -659,6 +666,7 @@ cp %{_builddir}/podman-%{version}/vendor/sigs.k8s.io/yaml/LICENSE %{buildroot}/u
 /usr/share/man/man1/podman-save.1
 /usr/share/man/man1/podman-search.1
 /usr/share/man/man1/podman-secret-create.1
+/usr/share/man/man1/podman-secret-exists.1
 /usr/share/man/man1/podman-secret-inspect.1
 /usr/share/man/man1/podman-secret-ls.1
 /usr/share/man/man1/podman-secret-rm.1
