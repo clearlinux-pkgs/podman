@@ -4,10 +4,10 @@
 # Using build pattern: make
 #
 Name     : podman
-Version  : 4.5.0
-Release  : 41
-URL      : https://github.com/containers/podman/archive/v4.5.0/podman-4.5.0.tar.gz
-Source0  : https://github.com/containers/podman/archive/v4.5.0/podman-4.5.0.tar.gz
+Version  : 4.5.1
+Release  : 42
+URL      : https://github.com/containers/podman/archive/v4.5.1/podman-4.5.1.tar.gz
+Source0  : https://github.com/containers/podman/archive/v4.5.1/podman-4.5.1.tar.gz
 Summary  : Builds Dockerfile using the Docker client
 Group    : Development/Tools
 License  : Apache-2.0 BSD-2-Clause BSD-3-Clause CC-BY-SA-4.0 ISC MIT MPL-2.0 MPL-2.0-no-copyleft-exception Unlicense
@@ -101,10 +101,13 @@ services components for the podman package.
 
 
 %prep
-%setup -q -n podman-4.5.0
-cd %{_builddir}/podman-4.5.0
+%setup -q -n podman-4.5.1
+cd %{_builddir}/podman-4.5.1
 %patch1 -p1
 %patch2 -p1
+pushd ..
+cp -a podman-4.5.1 buildavx2
+popd
 
 %build
 ## build_prepend content
@@ -114,20 +117,31 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1681491095
+export SOURCE_DATE_EPOCH=1685241262
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
-export CFLAGS="$CFLAGS -O3 -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -flto=auto -g1 -gno-column-info -gno-variable-location-views -gz "
-export FCFLAGS="$FFLAGS -O3 -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -flto=auto -g1 -gno-column-info -gno-variable-location-views -gz "
-export FFLAGS="$FFLAGS -O3 -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -flto=auto -g1 -gno-column-info -gno-variable-location-views -gz "
-export CXXFLAGS="$CXXFLAGS -O3 -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -flto=auto -g1 -gno-column-info -gno-variable-location-views -gz "
+export CFLAGS="$CFLAGS -O3 -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -flto=auto -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
+export FCFLAGS="$FFLAGS -O3 -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -flto=auto -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
+export FFLAGS="$FFLAGS -O3 -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -flto=auto -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
+export CXXFLAGS="$CXXFLAGS -O3 -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -flto=auto -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
 make  %{?_smp_mflags}  PREFIX=/usr
 
+pushd ../buildavx2
+## build_prepend content
+unset CLEAR_DEBUG_TERSE
+## build_prepend end
+export CFLAGS="$CFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3"
+export CXXFLAGS="$CXXFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3"
+export FFLAGS="$FFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3"
+export FCFLAGS="$FCFLAGS -m64 -march=x86-64-v3"
+export LDFLAGS="$LDFLAGS -m64 -march=x86-64-v3"
+make  %{?_smp_mflags}  PREFIX=/usr
+popd
 
 %install
-export SOURCE_DATE_EPOCH=1681491095
+export SOURCE_DATE_EPOCH=1685241262
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/podman
 cp %{_builddir}/podman-%{version}/LICENSE %{buildroot}/usr/share/package-licenses/podman/ddb5ce16d6184c36bffbf19074f58c3fddf6d399 || :
@@ -306,6 +320,7 @@ cp %{_builddir}/podman-%{version}/vendor/github.com/spf13/cobra/LICENSE.txt %{bu
 cp %{_builddir}/podman-%{version}/vendor/github.com/spf13/pflag/LICENSE %{buildroot}/usr/share/package-licenses/podman/b3c86ae465b21f7323059db335158b48187731c7 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/stefanberger/go-pkcs11uri/LICENSE %{buildroot}/usr/share/package-licenses/podman/c5c8a68f4b80929b3e66f054f37bb9e16078847f || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/stretchr/testify/LICENSE %{buildroot}/usr/share/package-licenses/podman/892204393ca075d09c8b1c1d880aba1ae0a2b805 || :
+cp %{_builddir}/podman-%{version}/vendor/github.com/sylabs/sif/v2/LICENSE.md %{buildroot}/usr/share/package-licenses/podman/a991643c5648ae86e762383114e34c6f7e6c4022 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/syndtr/gocapability/LICENSE %{buildroot}/usr/share/package-licenses/podman/a44bfde22babd7c7e1ccac9ca31f85a09358769f || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/tchap/go-patricia/v2/LICENSE %{buildroot}/usr/share/package-licenses/podman/7d3d6e2c0e14d20f475edae2f3936c574809efd5 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/theupdateframework/go-tuf/LICENSE %{buildroot}/usr/share/package-licenses/podman/62ccba312ed46c6899bb2467365cea7397b347d4 || :
@@ -347,15 +362,23 @@ cp %{_builddir}/podman-%{version}/vendor/gopkg.in/yaml.v2/NOTICE %{buildroot}/us
 cp %{_builddir}/podman-%{version}/vendor/gopkg.in/yaml.v3/LICENSE %{buildroot}/usr/share/package-licenses/podman/b74b3b31bc15ad5e94fc1947d682aa3d84132fce || :
 cp %{_builddir}/podman-%{version}/vendor/gopkg.in/yaml.v3/NOTICE %{buildroot}/usr/share/package-licenses/podman/9522d95b2b9b284285cc3fb6ecc445aa3ee5e785 || :
 cp %{_builddir}/podman-%{version}/vendor/sigs.k8s.io/yaml/LICENSE %{buildroot}/usr/share/package-licenses/podman/271aeaf56ee621c5accfc2a9db0b10717e038eaf || :
+pushd ../buildavx2/
+%make_install_v3 PREFIX=/usr
+popd
 %make_install PREFIX=/usr
+/usr/bin/elf-move.py avx2 %{buildroot}-v3 %{buildroot} %{buildroot}/usr/share/clear/filemap/filemap-%{name}
 
 %files
 %defattr(-,root,root,-)
+/V3/usr/lib/systemd/system-generators/podman-system-generator
+/V3/usr/lib/systemd/user-generators/podman-user-generator
 /usr/lib/systemd/system-generators/podman-system-generator
 /usr/lib/systemd/user-generators/podman-user-generator
 
 %files bin
 %defattr(-,root,root,-)
+/V3/usr/bin/podman
+/V3/usr/bin/podman-remote
 /usr/bin/podman
 /usr/bin/podman-remote
 
@@ -369,6 +392,8 @@ cp %{_builddir}/podman-%{version}/vendor/sigs.k8s.io/yaml/LICENSE %{buildroot}/u
 
 %files libexec
 %defattr(-,root,root,-)
+/V3/usr/libexec/podman/quadlet
+/V3/usr/libexec/podman/rootlessport
 /usr/libexec/podman/quadlet
 /usr/libexec/podman/rootlessport
 
@@ -464,6 +489,7 @@ cp %{_builddir}/podman-%{version}/vendor/sigs.k8s.io/yaml/LICENSE %{buildroot}/u
 /usr/share/package-licenses/podman/a347f428584b1ae13a669c007351ba7885597d59
 /usr/share/package-licenses/podman/a44bfde22babd7c7e1ccac9ca31f85a09358769f
 /usr/share/package-licenses/podman/a792f3e236631b46c9ea1a9f86ab3a6c24b17c89
+/usr/share/package-licenses/podman/a991643c5648ae86e762383114e34c6f7e6c4022
 /usr/share/package-licenses/podman/aa9b240f558caed367795f667629ccbca28f20b2
 /usr/share/package-licenses/podman/ad00ce7340d89dc13ccc59920ef75cb55af5b164
 /usr/share/package-licenses/podman/b21e038d8bdf4afbfbc42f29cb5b3614309048c3
