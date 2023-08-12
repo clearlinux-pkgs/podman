@@ -4,17 +4,25 @@
 # Using build pattern: make
 #
 Name     : podman
-Version  : 4.6.0
-Release  : 48
-URL      : https://github.com/containers/podman/archive/v4.6.0/podman-4.6.0.tar.gz
-Source0  : https://github.com/containers/podman/archive/v4.6.0/podman-4.6.0.tar.gz
+Version  : 4.6.1
+Release  : 50
+URL      : https://github.com/containers/podman/archive/v4.6.1/podman-4.6.1.tar.gz
+Source0  : https://github.com/containers/podman/archive/v4.6.1/podman-4.6.1.tar.gz
 Summary  : Builds Dockerfile using the Docker client
 Group    : Development/Tools
 License  : Apache-2.0 BSD-2-Clause BSD-3-Clause CC-BY-SA-4.0 ISC MIT MPL-2.0 MPL-2.0-no-copyleft-exception Unlicense
+Requires: podman-bin = %{version}-%{release}
+Requires: podman-config = %{version}-%{release}
+Requires: podman-data = %{version}-%{release}
+Requires: podman-libexec = %{version}-%{release}
+Requires: podman-license = %{version}-%{release}
+Requires: podman-man = %{version}-%{release}
+Requires: podman-services = %{version}-%{release}
 Requires: cni-plugins
 Requires: conmon
 Requires: runc
 Requires: slirp4netns
+BuildRequires : go
 BuildRequires : golang-github-cpuguy83-go-md2man
 BuildRequires : gpgme-dev
 BuildRequires : pkgconfig(libseccomp)
@@ -23,18 +31,80 @@ BuildRequires : systemd-dev
 %define __strip /bin/true
 %define debug_package %{nil}
 Patch1: 0001-Enable-stateless.patch
-Patch2: 0002-Switch-default-graph-driver-to-overlay.patch
 
 %description
 Builds Dockerfile using the Docker client
 
+%package bin
+Summary: bin components for the podman package.
+Group: Binaries
+Requires: podman-data = %{version}-%{release}
+Requires: podman-libexec = %{version}-%{release}
+Requires: podman-config = %{version}-%{release}
+Requires: podman-license = %{version}-%{release}
+Requires: podman-services = %{version}-%{release}
+
+%description bin
+bin components for the podman package.
+
+
+%package config
+Summary: config components for the podman package.
+Group: Default
+
+%description config
+config components for the podman package.
+
+
+%package data
+Summary: data components for the podman package.
+Group: Data
+
+%description data
+data components for the podman package.
+
+
+%package libexec
+Summary: libexec components for the podman package.
+Group: Default
+Requires: podman-config = %{version}-%{release}
+Requires: podman-license = %{version}-%{release}
+
+%description libexec
+libexec components for the podman package.
+
+
+%package license
+Summary: license components for the podman package.
+Group: Default
+
+%description license
+license components for the podman package.
+
+
+%package man
+Summary: man components for the podman package.
+Group: Default
+
+%description man
+man components for the podman package.
+
+
+%package services
+Summary: services components for the podman package.
+Group: Systemd services
+Requires: systemd
+
+%description services
+services components for the podman package.
+
+
 %prep
-%setup -q -n podman-4.6.0
-cd %{_builddir}/podman-4.6.0
+%setup -q -n podman-4.6.1
+cd %{_builddir}/podman-4.6.1
 %patch -P 1 -p1
-%patch -P 2 -p1
 pushd ..
-cp -a podman-4.6.0 buildavx2
+cp -a podman-4.6.1 buildavx2
 popd
 
 %build
@@ -45,7 +115,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1691161063
+export SOURCE_DATE_EPOCH=1691799785
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -69,7 +139,7 @@ make  %{?_smp_mflags}  PREFIX=/usr
 popd
 
 %install
-export SOURCE_DATE_EPOCH=1691161063
+export SOURCE_DATE_EPOCH=1691799785
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/podman
 cp %{_builddir}/podman-%{version}/LICENSE %{buildroot}/usr/share/package-licenses/podman/ddb5ce16d6184c36bffbf19074f58c3fddf6d399 || :
@@ -288,3 +358,385 @@ popd
 
 %files
 %defattr(-,root,root,-)
+/usr/lib/systemd/system-generators/podman-system-generator
+/usr/lib/systemd/user-generators/podman-user-generator
+
+%files bin
+%defattr(-,root,root,-)
+/V3/usr/bin/podman
+/V3/usr/bin/podman-remote
+/usr/bin/podman
+/usr/bin/podman-remote
+/usr/bin/podmansh
+
+%files config
+%defattr(-,root,root,-)
+/usr/lib/tmpfiles.d/podman.conf
+
+%files data
+%defattr(-,root,root,-)
+/usr/share/defaults/containers/policy.json
+
+%files libexec
+%defattr(-,root,root,-)
+/V3/usr/libexec/podman/quadlet
+/V3/usr/libexec/podman/rootlessport
+/usr/libexec/podman/quadlet
+/usr/libexec/podman/rootlessport
+
+%files license
+%defattr(0644,root,root,0755)
+/usr/share/package-licenses/podman/0506fb9753d7d7b8e2e7dec43a93c22e052f32b5
+/usr/share/package-licenses/podman/06b27345acae9303e13dde9974d2b2e318b05989
+/usr/share/package-licenses/podman/08021ae73f58f423dd6e7b525e81cf2520f7619e
+/usr/share/package-licenses/podman/0e280ff033260ad31cab00d9e8077dab27bc35af
+/usr/share/package-licenses/podman/0e8f2042647b8140e79c4eb7d233d1b39231db09
+/usr/share/package-licenses/podman/1128f8f91104ba9ef98d37eea6523a888dcfa5de
+/usr/share/package-licenses/podman/11a8fec351554e8f6c3f4dac5a1f4049dd467ba8
+/usr/share/package-licenses/podman/135191231608cd88684768718b8a2f439c9e1817
+/usr/share/package-licenses/podman/147d5d72b02467b04653ff37be85b8e201e9af66
+/usr/share/package-licenses/podman/14a67ef6fa0efaaac7c9cebf6c4260bf082f409e
+/usr/share/package-licenses/podman/15e225f105ead05a4d06cdf7723bb6ec11e92304
+/usr/share/package-licenses/podman/164d8f2f76143062c140f4581b90ba9cc268b90a
+/usr/share/package-licenses/podman/16e22f58039363cff486afeac52bde18cd4ab5b3
+/usr/share/package-licenses/podman/172ca3bbafe312a1cf09cfff26953db2f425c28e
+/usr/share/package-licenses/podman/178b27feb961b28990b377da59e9d43d868a0a6f
+/usr/share/package-licenses/podman/20b06a68cf65738d43afa04acce0126f341c77f8
+/usr/share/package-licenses/podman/24edd24d0fa453e780367c0ae9c1aa8bce72c6c1
+/usr/share/package-licenses/podman/25053a3b2190049c9d407b00c3a2ff001a7c066a
+/usr/share/package-licenses/podman/2510861d72bd971c91b53a5c5fc291e2971c669e
+/usr/share/package-licenses/podman/2516d156cb93ae7b1f855b09e76c44f04fbdb689
+/usr/share/package-licenses/podman/271aeaf56ee621c5accfc2a9db0b10717e038eaf
+/usr/share/package-licenses/podman/298850a6cdb155f54cfa44641df70b36228ed031
+/usr/share/package-licenses/podman/2afef5b6ec0b4453f0b1d7afac0b97168620aa84
+/usr/share/package-licenses/podman/2b8b815229aa8a61e483fb4ba0588b8b6c491890
+/usr/share/package-licenses/podman/2ebe302ef4d8d257ac6f0a916285b51937a25641
+/usr/share/package-licenses/podman/2f3b9a7b24e6f1b7cc9973c0d6ecd6c51022ffa5
+/usr/share/package-licenses/podman/3037fadf4c833d13c87fcd0b2f932de187edf676
+/usr/share/package-licenses/podman/3110e55750143a84918d7423febc9c83a55bc28c
+/usr/share/package-licenses/podman/321794b769bbcd8144c089890e3c302d1f7f1353
+/usr/share/package-licenses/podman/376caa2cd54c4196280157d071524614350e7ce8
+/usr/share/package-licenses/podman/3faf341fbc32621fe1ac089ae2ab7a23980fc189
+/usr/share/package-licenses/podman/40759db9edbb7fe30b64cc213f4f20c4618e2932
+/usr/share/package-licenses/podman/417483c9ccd2847921fd8605edf02b5a243b4761
+/usr/share/package-licenses/podman/41cfd17f911b7617cf679b82c58919e90534deb9
+/usr/share/package-licenses/podman/478e9248d22139384936a5878d3c2eb911659e20
+/usr/share/package-licenses/podman/48c378c760084a10ecfdab86c88abf1707b06741
+/usr/share/package-licenses/podman/51bad2bd8dc245d3cd45f69b6dd4e52f97131e6a
+/usr/share/package-licenses/podman/51c8ee1f4a6ab95d973e4bf81149cc30fbbc1d57
+/usr/share/package-licenses/podman/523489384296f403da31edf8edf6f9023d328517
+/usr/share/package-licenses/podman/535e3badf5b532d842627b504976fbb93bc2d8b8
+/usr/share/package-licenses/podman/5476f2f91673ef040f1956907e7f45e72d5e11ee
+/usr/share/package-licenses/podman/552b909d29bd260c886142a969b462c85f976dcd
+/usr/share/package-licenses/podman/554fb441fbb1607579b7c9f8e9d7fab5d00e3a51
+/usr/share/package-licenses/podman/565471fdf06cfb21b7c69c5fc329a1341d5d9ad0
+/usr/share/package-licenses/podman/56b820712432e458f05f883566ca8cd85dcdaad5
+/usr/share/package-licenses/podman/57f2307e38c6e9af9958e3be89f49192220379fa
+/usr/share/package-licenses/podman/580c0a1f1386fe13bce395d23bdaf3b14ae2e20b
+/usr/share/package-licenses/podman/5a3d2a3dd0e3ff34083dd46d12cb4d8d579cfc24
+/usr/share/package-licenses/podman/5ad2002bc8d2b22e2034867d159f71ba6258e18f
+/usr/share/package-licenses/podman/5bcc18c4f348cadfab7beb94aa6cbd43ca5b0bba
+/usr/share/package-licenses/podman/5ca808f075931c5322193d4afd5a3370c824f810
+/usr/share/package-licenses/podman/5fcf3d8a80be9b86a2c442ab938090611e6ee317
+/usr/share/package-licenses/podman/62446e71c226403f1a2e67d0f66ede03e3fbdd2f
+/usr/share/package-licenses/podman/62ccba312ed46c6899bb2467365cea7397b347d4
+/usr/share/package-licenses/podman/669a1e53b9dd9df3474300d3d959bb85bad75945
+/usr/share/package-licenses/podman/66c5c002958b1f31f74410b353972d622d74e007
+/usr/share/package-licenses/podman/7080652cc78cd9855d39e324529a3b5f3745dcd6
+/usr/share/package-licenses/podman/734241e55c8746ce6eb2d84021cd20d50b3a1314
+/usr/share/package-licenses/podman/74850a25a5319bdddc0d998eb8926c18bada282b
+/usr/share/package-licenses/podman/7be82c1a81e7197640a88df91dc82d64b77c7acd
+/usr/share/package-licenses/podman/7d3d6e2c0e14d20f475edae2f3936c574809efd5
+/usr/share/package-licenses/podman/7df059597099bb7dcf25d2a9aedfaf4465f72d8d
+/usr/share/package-licenses/podman/7f7a12bcfc16fab2522aa1a562fd3d2aee429d3b
+/usr/share/package-licenses/podman/810612ee8c1872b7ee4dba34c090ebd8f7491aa1
+/usr/share/package-licenses/podman/824c64ac0a5114fe6576fa7aabc028427edaec4e
+/usr/share/package-licenses/podman/836ef1b46953afdb78ce3929bc6831ca83620b65
+/usr/share/package-licenses/podman/86cebfb1269cd41972b85e20d39d14d808a5b8bd
+/usr/share/package-licenses/podman/86e41414e009c87b1cfed9964aead787f4ef3ed0
+/usr/share/package-licenses/podman/892204393ca075d09c8b1c1d880aba1ae0a2b805
+/usr/share/package-licenses/podman/8b31eebf3b5472b746a3a34142877b3bb6bd8e68
+/usr/share/package-licenses/podman/8bc609022fad5f9e8aec8889ab9cb195afd5ecc5
+/usr/share/package-licenses/podman/8c7c0aabc81ceebe62c2d962e3dde998a749e710
+/usr/share/package-licenses/podman/8fb92f475d78da1315877a719c6856fc64531d30
+/usr/share/package-licenses/podman/8ff574408142cd6bbb2a1b83302de24cb7b35e8b
+/usr/share/package-licenses/podman/92170cdc034b2ff819323ff670d3b7266c8bffcd
+/usr/share/package-licenses/podman/9277f25d2ab38e908276aff21eb9ec917583277a
+/usr/share/package-licenses/podman/93ac97c9679b68518f1fd7de627ce2f77f44082d
+/usr/share/package-licenses/podman/9522d95b2b9b284285cc3fb6ecc445aa3ee5e785
+/usr/share/package-licenses/podman/979fd7d5c67073b265d96f584aac3de1c419b8e2
+/usr/share/package-licenses/podman/994658c265db5dbf456fa6163905cc9c0b3bda46
+/usr/share/package-licenses/podman/9c1bedc0d42f24c24a1bd266f3ce101a4b0579fc
+/usr/share/package-licenses/podman/9ea762f96a976992ce1987949b894d31192bb310
+/usr/share/package-licenses/podman/9f1b6690bcfc732123ae209c90c62f2ba80dfcb0
+/usr/share/package-licenses/podman/a1c7852c717fed2c9a0284ed112ea66013230da6
+/usr/share/package-licenses/podman/a25a6744be0a23436014541afd340d2f2aa1e46c
+/usr/share/package-licenses/podman/a347f428584b1ae13a669c007351ba7885597d59
+/usr/share/package-licenses/podman/a44bfde22babd7c7e1ccac9ca31f85a09358769f
+/usr/share/package-licenses/podman/a792f3e236631b46c9ea1a9f86ab3a6c24b17c89
+/usr/share/package-licenses/podman/a991643c5648ae86e762383114e34c6f7e6c4022
+/usr/share/package-licenses/podman/aa9b240f558caed367795f667629ccbca28f20b2
+/usr/share/package-licenses/podman/ad00ce7340d89dc13ccc59920ef75cb55af5b164
+/usr/share/package-licenses/podman/b21e038d8bdf4afbfbc42f29cb5b3614309048c3
+/usr/share/package-licenses/podman/b3c529b8fb7f1d56db7381bc7ef5f481ea2ac2a4
+/usr/share/package-licenses/podman/b3c86ae465b21f7323059db335158b48187731c7
+/usr/share/package-licenses/podman/b74b3b31bc15ad5e94fc1947d682aa3d84132fce
+/usr/share/package-licenses/podman/b7a606730713ac061594edab33cf941704b4a95c
+/usr/share/package-licenses/podman/b7b97d84a5f0b778ab971d2afce44f47c8b6e80a
+/usr/share/package-licenses/podman/c58c331bb2225ba2c11040abafd1f41e11476661
+/usr/share/package-licenses/podman/c5c8a68f4b80929b3e66f054f37bb9e16078847f
+/usr/share/package-licenses/podman/c5f9a33906e2c8c9b408c50d38e01e7a08449ee7
+/usr/share/package-licenses/podman/c700a8b9312d24bdc57570f7d6a131cf63d89016
+/usr/share/package-licenses/podman/c7feacb4667f8c63c89e2eeeb9a913bd3ced8ac2
+/usr/share/package-licenses/podman/cd3e4d932cee20da681e6b3bee8139cb4f734034
+/usr/share/package-licenses/podman/cd87737b0bbdeee650f6a72ee61209863b1d827f
+/usr/share/package-licenses/podman/d1ac61aa5d8d354f4588fb9a48fa92c0679b46a5
+/usr/share/package-licenses/podman/d2f340a01dd48b589a70f627cf7058c585a315e4
+/usr/share/package-licenses/podman/d3b7a70b03b43d4e7205d178100581923a0baad2
+/usr/share/package-licenses/podman/d3d30f733d36ea721eb89e9c37f899f729a0ea5e
+/usr/share/package-licenses/podman/d6a5f1ecaedd723c325a2063375b3517e808a2b5
+/usr/share/package-licenses/podman/d9b858cfcfe8ab19d2c1134d04b1f8b1da03c373
+/usr/share/package-licenses/podman/da34754c05d40ff81f91de8c1b85ea6e5503e21d
+/usr/share/package-licenses/podman/dd59a81b4235f5df8d511168eaaafb30ed88bc71
+/usr/share/package-licenses/podman/ddb5ce16d6184c36bffbf19074f58c3fddf6d399
+/usr/share/package-licenses/podman/eecfc0c7e0930c6ba1ed0ff2d46a0a6fa0d16d6c
+/usr/share/package-licenses/podman/f3eab54cb1736b419ef75b8c44bea2b17614bd31
+/usr/share/package-licenses/podman/f56166bca39792bf49347c6636ce5a9b6dbf3657
+/usr/share/package-licenses/podman/f60d047cd34de4c91b3a045ebf117fe54b3c279e
+/usr/share/package-licenses/podman/f7f33fde14de785a3ac53f250bb746ba30844639
+/usr/share/package-licenses/podman/f88291c879c4ee329bfa341b54eaedd29d3058cf
+/usr/share/package-licenses/podman/f9bbe972432aebdebf3469c89434273ba88ec9c7
+/usr/share/package-licenses/podman/f9cab757896ef6b3570e62b2df7fb63ab1a34b80
+/usr/share/package-licenses/podman/fa7c4d75bae3a641d1f9ab5df028175bfb8a69ca
+/usr/share/package-licenses/podman/ff007ce11f3ff7964f1a5b04202c4e95b5c82c85
+
+%files man
+%defattr(0644,root,root,0755)
+/usr/share/man/man1/podman-attach.1
+/usr/share/man/man1/podman-auto-update.1
+/usr/share/man/man1/podman-build.1
+/usr/share/man/man1/podman-commit.1
+/usr/share/man/man1/podman-completion.1
+/usr/share/man/man1/podman-container-attach.1
+/usr/share/man/man1/podman-container-checkpoint.1
+/usr/share/man/man1/podman-container-cleanup.1
+/usr/share/man/man1/podman-container-clone.1
+/usr/share/man/man1/podman-container-commit.1
+/usr/share/man/man1/podman-container-cp.1
+/usr/share/man/man1/podman-container-create.1
+/usr/share/man/man1/podman-container-diff.1
+/usr/share/man/man1/podman-container-exec.1
+/usr/share/man/man1/podman-container-exists.1
+/usr/share/man/man1/podman-container-export.1
+/usr/share/man/man1/podman-container-init.1
+/usr/share/man/man1/podman-container-inspect.1
+/usr/share/man/man1/podman-container-kill.1
+/usr/share/man/man1/podman-container-list.1
+/usr/share/man/man1/podman-container-logs.1
+/usr/share/man/man1/podman-container-ls.1
+/usr/share/man/man1/podman-container-mount.1
+/usr/share/man/man1/podman-container-pause.1
+/usr/share/man/man1/podman-container-port.1
+/usr/share/man/man1/podman-container-prune.1
+/usr/share/man/man1/podman-container-ps.1
+/usr/share/man/man1/podman-container-rename.1
+/usr/share/man/man1/podman-container-restart.1
+/usr/share/man/man1/podman-container-restore.1
+/usr/share/man/man1/podman-container-rm.1
+/usr/share/man/man1/podman-container-run.1
+/usr/share/man/man1/podman-container-runlabel.1
+/usr/share/man/man1/podman-container-start.1
+/usr/share/man/man1/podman-container-stats.1
+/usr/share/man/man1/podman-container-stop.1
+/usr/share/man/man1/podman-container-top.1
+/usr/share/man/man1/podman-container-umount.1
+/usr/share/man/man1/podman-container-unmount.1
+/usr/share/man/man1/podman-container-unpause.1
+/usr/share/man/man1/podman-container-update.1
+/usr/share/man/man1/podman-container-wait.1
+/usr/share/man/man1/podman-container.1
+/usr/share/man/man1/podman-cp.1
+/usr/share/man/man1/podman-create.1
+/usr/share/man/man1/podman-diff.1
+/usr/share/man/man1/podman-events.1
+/usr/share/man/man1/podman-exec.1
+/usr/share/man/man1/podman-export.1
+/usr/share/man/man1/podman-generate-kube.1
+/usr/share/man/man1/podman-generate-spec.1
+/usr/share/man/man1/podman-generate-systemd.1
+/usr/share/man/man1/podman-generate.1
+/usr/share/man/man1/podman-healthcheck-run.1
+/usr/share/man/man1/podman-healthcheck.1
+/usr/share/man/man1/podman-help.1
+/usr/share/man/man1/podman-history.1
+/usr/share/man/man1/podman-image-build.1
+/usr/share/man/man1/podman-image-diff.1
+/usr/share/man/man1/podman-image-exists.1
+/usr/share/man/man1/podman-image-history.1
+/usr/share/man/man1/podman-image-import.1
+/usr/share/man/man1/podman-image-inspect.1
+/usr/share/man/man1/podman-image-list.1
+/usr/share/man/man1/podman-image-load.1
+/usr/share/man/man1/podman-image-ls.1
+/usr/share/man/man1/podman-image-mount.1
+/usr/share/man/man1/podman-image-prune.1
+/usr/share/man/man1/podman-image-pull.1
+/usr/share/man/man1/podman-image-push.1
+/usr/share/man/man1/podman-image-rm.1
+/usr/share/man/man1/podman-image-save.1
+/usr/share/man/man1/podman-image-scp.1
+/usr/share/man/man1/podman-image-search.1
+/usr/share/man/man1/podman-image-sign.1
+/usr/share/man/man1/podman-image-tag.1
+/usr/share/man/man1/podman-image-tree.1
+/usr/share/man/man1/podman-image-trust.1
+/usr/share/man/man1/podman-image-umount.1
+/usr/share/man/man1/podman-image-unmount.1
+/usr/share/man/man1/podman-image-untag.1
+/usr/share/man/man1/podman-image.1
+/usr/share/man/man1/podman-images.1
+/usr/share/man/man1/podman-import.1
+/usr/share/man/man1/podman-info.1
+/usr/share/man/man1/podman-init.1
+/usr/share/man/man1/podman-inspect.1
+/usr/share/man/man1/podman-kill.1
+/usr/share/man/man1/podman-kube-apply.1
+/usr/share/man/man1/podman-kube-down.1
+/usr/share/man/man1/podman-kube-generate.1
+/usr/share/man/man1/podman-kube-play.1
+/usr/share/man/man1/podman-kube.1
+/usr/share/man/man1/podman-load.1
+/usr/share/man/man1/podman-login.1
+/usr/share/man/man1/podman-logout.1
+/usr/share/man/man1/podman-logs.1
+/usr/share/man/man1/podman-machine-info.1
+/usr/share/man/man1/podman-machine-init.1
+/usr/share/man/man1/podman-machine-inspect.1
+/usr/share/man/man1/podman-machine-list.1
+/usr/share/man/man1/podman-machine-ls.1
+/usr/share/man/man1/podman-machine-os-apply.1
+/usr/share/man/man1/podman-machine-os.1
+/usr/share/man/man1/podman-machine-rm.1
+/usr/share/man/man1/podman-machine-set.1
+/usr/share/man/man1/podman-machine-ssh.1
+/usr/share/man/man1/podman-machine-start.1
+/usr/share/man/man1/podman-machine-stop.1
+/usr/share/man/man1/podman-machine.1
+/usr/share/man/man1/podman-manifest-add.1
+/usr/share/man/man1/podman-manifest-annotate.1
+/usr/share/man/man1/podman-manifest-create.1
+/usr/share/man/man1/podman-manifest-exists.1
+/usr/share/man/man1/podman-manifest-inspect.1
+/usr/share/man/man1/podman-manifest-push.1
+/usr/share/man/man1/podman-manifest-remove.1
+/usr/share/man/man1/podman-manifest-rm.1
+/usr/share/man/man1/podman-manifest.1
+/usr/share/man/man1/podman-mount.1
+/usr/share/man/man1/podman-network-connect.1
+/usr/share/man/man1/podman-network-create.1
+/usr/share/man/man1/podman-network-disconnect.1
+/usr/share/man/man1/podman-network-exists.1
+/usr/share/man/man1/podman-network-inspect.1
+/usr/share/man/man1/podman-network-ls.1
+/usr/share/man/man1/podman-network-prune.1
+/usr/share/man/man1/podman-network-reload.1
+/usr/share/man/man1/podman-network-rm.1
+/usr/share/man/man1/podman-network-update.1
+/usr/share/man/man1/podman-network.1
+/usr/share/man/man1/podman-pause.1
+/usr/share/man/man1/podman-play-kube.1
+/usr/share/man/man1/podman-pod-clone.1
+/usr/share/man/man1/podman-pod-create.1
+/usr/share/man/man1/podman-pod-exists.1
+/usr/share/man/man1/podman-pod-inspect.1
+/usr/share/man/man1/podman-pod-kill.1
+/usr/share/man/man1/podman-pod-logs.1
+/usr/share/man/man1/podman-pod-pause.1
+/usr/share/man/man1/podman-pod-prune.1
+/usr/share/man/man1/podman-pod-ps.1
+/usr/share/man/man1/podman-pod-restart.1
+/usr/share/man/man1/podman-pod-rm.1
+/usr/share/man/man1/podman-pod-start.1
+/usr/share/man/man1/podman-pod-stats.1
+/usr/share/man/man1/podman-pod-stop.1
+/usr/share/man/man1/podman-pod-top.1
+/usr/share/man/man1/podman-pod-unpause.1
+/usr/share/man/man1/podman-pod.1
+/usr/share/man/man1/podman-port.1
+/usr/share/man/man1/podman-ps.1
+/usr/share/man/man1/podman-pull.1
+/usr/share/man/man1/podman-push.1
+/usr/share/man/man1/podman-remote.1
+/usr/share/man/man1/podman-rename.1
+/usr/share/man/man1/podman-restart.1
+/usr/share/man/man1/podman-rm.1
+/usr/share/man/man1/podman-rmi.1
+/usr/share/man/man1/podman-run.1
+/usr/share/man/man1/podman-save.1
+/usr/share/man/man1/podman-search.1
+/usr/share/man/man1/podman-secret-create.1
+/usr/share/man/man1/podman-secret-exists.1
+/usr/share/man/man1/podman-secret-inspect.1
+/usr/share/man/man1/podman-secret-ls.1
+/usr/share/man/man1/podman-secret-rm.1
+/usr/share/man/man1/podman-secret.1
+/usr/share/man/man1/podman-start.1
+/usr/share/man/man1/podman-stats.1
+/usr/share/man/man1/podman-stop.1
+/usr/share/man/man1/podman-system-connection-add.1
+/usr/share/man/man1/podman-system-connection-default.1
+/usr/share/man/man1/podman-system-connection-list.1
+/usr/share/man/man1/podman-system-connection-remove.1
+/usr/share/man/man1/podman-system-connection-rename.1
+/usr/share/man/man1/podman-system-connection.1
+/usr/share/man/man1/podman-system-df.1
+/usr/share/man/man1/podman-system-events.1
+/usr/share/man/man1/podman-system-info.1
+/usr/share/man/man1/podman-system-migrate.1
+/usr/share/man/man1/podman-system-prune.1
+/usr/share/man/man1/podman-system-renumber.1
+/usr/share/man/man1/podman-system-reset.1
+/usr/share/man/man1/podman-system-service.1
+/usr/share/man/man1/podman-system.1
+/usr/share/man/man1/podman-tag.1
+/usr/share/man/man1/podman-top.1
+/usr/share/man/man1/podman-umount.1
+/usr/share/man/man1/podman-unmount.1
+/usr/share/man/man1/podman-unpause.1
+/usr/share/man/man1/podman-unshare.1
+/usr/share/man/man1/podman-untag.1
+/usr/share/man/man1/podman-update.1
+/usr/share/man/man1/podman-version.1
+/usr/share/man/man1/podman-volume-create.1
+/usr/share/man/man1/podman-volume-exists.1
+/usr/share/man/man1/podman-volume-export.1
+/usr/share/man/man1/podman-volume-import.1
+/usr/share/man/man1/podman-volume-inspect.1
+/usr/share/man/man1/podman-volume-ls.1
+/usr/share/man/man1/podman-volume-mount.1
+/usr/share/man/man1/podman-volume-prune.1
+/usr/share/man/man1/podman-volume-reload.1
+/usr/share/man/man1/podman-volume-rm.1
+/usr/share/man/man1/podman-volume-unmount.1
+/usr/share/man/man1/podman-volume.1
+/usr/share/man/man1/podman-wait.1
+/usr/share/man/man1/podman.1
+/usr/share/man/man1/podmansh.1
+/usr/share/man/man5/podman-systemd.unit.5
+/usr/share/man/man5/quadlet.5
+
+%files services
+%defattr(-,root,root,-)
+/usr/lib/systemd/system/podman-auto-update.service
+/usr/lib/systemd/system/podman-auto-update.timer
+/usr/lib/systemd/system/podman-clean-transient.service
+/usr/lib/systemd/system/podman-kube@.service
+/usr/lib/systemd/system/podman-restart.service
+/usr/lib/systemd/system/podman.service
+/usr/lib/systemd/system/podman.socket
+/usr/lib/systemd/user/podman-auto-update.service
+/usr/lib/systemd/user/podman-auto-update.timer
+/usr/lib/systemd/user/podman-kube@.service
+/usr/lib/systemd/user/podman-restart.service
+/usr/lib/systemd/user/podman.service
+/usr/lib/systemd/user/podman.socket
