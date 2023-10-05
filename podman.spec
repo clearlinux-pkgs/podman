@@ -4,10 +4,10 @@
 # Using build pattern: make
 #
 Name     : podman
-Version  : 4.7.0
-Release  : 52
-URL      : https://github.com/containers/podman/archive/v4.7.0/podman-4.7.0.tar.gz
-Source0  : https://github.com/containers/podman/archive/v4.7.0/podman-4.7.0.tar.gz
+Version  : 4.7.1
+Release  : 53
+URL      : https://github.com/containers/podman/archive/v4.7.1/podman-4.7.1.tar.gz
+Source0  : https://github.com/containers/podman/archive/v4.7.1/podman-4.7.1.tar.gz
 Summary  : Builds Dockerfile using the Docker client
 Group    : Development/Tools
 License  : Apache-2.0 BSD-2-Clause BSD-3-Clause CC-BY-SA-4.0 ISC MIT MPL-2.0 MPL-2.0-no-copyleft-exception Unlicense
@@ -100,11 +100,11 @@ services components for the podman package.
 
 
 %prep
-%setup -q -n podman-4.7.0
-cd %{_builddir}/podman-4.7.0
+%setup -q -n podman-4.7.1
+cd %{_builddir}/podman-4.7.1
 %patch -P 1 -p1
 pushd ..
-cp -a podman-4.7.0 buildavx2
+cp -a podman-4.7.1 buildavx2
 popd
 
 %build
@@ -115,31 +115,51 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1695914753
+export SOURCE_DATE_EPOCH=1696542799
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
-export CFLAGS="$CFLAGS -O3 -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -flto=auto -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
-export FCFLAGS="$FFLAGS -O3 -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -flto=auto -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
-export FFLAGS="$FFLAGS -O3 -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -flto=auto -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
-export CXXFLAGS="$CXXFLAGS -O3 -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -flto=auto -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
+CLEAR_INTERMEDIATE_CFLAGS="$CLEAR_INTERMEDIATE_CFLAGS -O3 -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -flto=auto -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
+CLEAR_INTERMEDIATE_FCFLAGS="$CLEAR_INTERMEDIATE_FFLAGS -O3 -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -flto=auto -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
+CLEAR_INTERMEDIATE_FFLAGS="$CLEAR_INTERMEDIATE_FFLAGS -O3 -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -flto=auto -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
+CLEAR_INTERMEDIATE_CXXFLAGS="$CLEAR_INTERMEDIATE_CXXFLAGS -O3 -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -flto=auto -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
+CFLAGS="$CLEAR_INTERMEDIATE_CFLAGS"
+CXXFLAGS="$CLEAR_INTERMEDIATE_CXXFLAGS"
+FFLAGS="$CLEAR_INTERMEDIATE_FFLAGS"
+FCFLAGS="$CLEAR_INTERMEDIATE_FCFLAGS"
+ASFLAGS="$CLEAR_INTERMEDIATE_ASFLAGS"
+LDFLAGS="$CLEAR_INTERMEDIATE_LDFLAGS"
 make  %{?_smp_mflags}  PREFIX=/usr
 
 pushd ../buildavx2
 ## build_prepend content
 unset CLEAR_DEBUG_TERSE
 ## build_prepend end
-export CFLAGS="$CFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3"
-export CXXFLAGS="$CXXFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3"
-export FFLAGS="$FFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3"
-export FCFLAGS="$FCFLAGS -m64 -march=x86-64-v3"
-export LDFLAGS="$LDFLAGS -m64 -march=x86-64-v3"
+CFLAGS="$CLEAR_INTERMEDIATE_CFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3 "
+CXXFLAGS="$CLEAR_INTERMEDIATE_CXXFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3 "
+FFLAGS="$CLEAR_INTERMEDIATE_FFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3 "
+FCFLAGS="$CLEAR_INTERMEDIATE_FCFLAGS -m64 -march=x86-64-v3 "
+LDFLAGS="$CLEAR_INTERMEDIATE_LDFLAGS -m64 -march=x86-64-v3 "
 make  %{?_smp_mflags}  PREFIX=/usr
 popd
 
 %install
-export SOURCE_DATE_EPOCH=1695914753
+export GCC_IGNORE_WERROR=1
+export AR=gcc-ar
+export RANLIB=gcc-ranlib
+export NM=gcc-nm
+CLEAR_INTERMEDIATE_CFLAGS="$CLEAR_INTERMEDIATE_CFLAGS -O3 -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -flto=auto -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
+CLEAR_INTERMEDIATE_FCFLAGS="$CLEAR_INTERMEDIATE_FFLAGS -O3 -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -flto=auto -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
+CLEAR_INTERMEDIATE_FFLAGS="$CLEAR_INTERMEDIATE_FFLAGS -O3 -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -flto=auto -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
+CLEAR_INTERMEDIATE_CXXFLAGS="$CLEAR_INTERMEDIATE_CXXFLAGS -O3 -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -flto=auto -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
+CFLAGS="$CLEAR_INTERMEDIATE_CFLAGS"
+CXXFLAGS="$CLEAR_INTERMEDIATE_CXXFLAGS"
+FFLAGS="$CLEAR_INTERMEDIATE_FFLAGS"
+FCFLAGS="$CLEAR_INTERMEDIATE_FCFLAGS"
+ASFLAGS="$CLEAR_INTERMEDIATE_ASFLAGS"
+LDFLAGS="$CLEAR_INTERMEDIATE_LDFLAGS"
+export SOURCE_DATE_EPOCH=1696542799
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/podman
 cp %{_builddir}/podman-%{version}/LICENSE %{buildroot}/usr/share/package-licenses/podman/ddb5ce16d6184c36bffbf19074f58c3fddf6d399 || :
@@ -165,6 +185,7 @@ cp %{_builddir}/podman-%{version}/vendor/github.com/Microsoft/go-winio/LICENSE %
 cp %{_builddir}/podman-%{version}/vendor/github.com/Microsoft/hcsshim/LICENSE %{buildroot}/usr/share/package-licenses/podman/56b820712432e458f05f883566ca8cd85dcdaad5 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/VividCortex/ewma/LICENSE %{buildroot}/usr/share/package-licenses/podman/5fcf3d8a80be9b86a2c442ab938090611e6ee317 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/acarl005/stripansi/LICENSE %{buildroot}/usr/share/package-licenses/podman/c5f9a33906e2c8c9b408c50d38e01e7a08449ee7 || :
+cp %{_builddir}/podman-%{version}/vendor/github.com/aead/serpent/LICENSE %{buildroot}/usr/share/package-licenses/podman/3fe1526478dfe06f7e7822c550a57c328f781410 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/asaskevich/govalidator/LICENSE %{buildroot}/usr/share/package-licenses/podman/f56166bca39792bf49347c6636ce5a9b6dbf3657 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/blang/semver/v4/LICENSE %{buildroot}/usr/share/package-licenses/podman/16e22f58039363cff486afeac52bde18cd4ab5b3 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/buger/goterm/LICENSE %{buildroot}/usr/share/package-licenses/podman/c58c331bb2225ba2c11040abafd1f41e11476661 || :
@@ -238,6 +259,7 @@ cp %{_builddir}/podman-%{version}/vendor/github.com/go-playground/locales/LICENS
 cp %{_builddir}/podman-%{version}/vendor/github.com/go-playground/universal-translator/LICENSE %{buildroot}/usr/share/package-licenses/podman/8a46ebf053d74e536126c7ef055e1a44d2e4fdb5 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/go-playground/validator/v10/LICENSE %{buildroot}/usr/share/package-licenses/podman/d6a13a9c5e7ea265238b476a02df25ad80c7480b || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/go-task/slim-sprig/LICENSE.txt %{buildroot}/usr/share/package-licenses/podman/535e3badf5b532d842627b504976fbb93bc2d8b8 || :
+cp %{_builddir}/podman-%{version}/vendor/github.com/goccy/go-json/LICENSE %{buildroot}/usr/share/package-licenses/podman/b4ebf917aef0f8f23e0172cc6f5995ee534eaeac || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/godbus/dbus/v5/LICENSE %{buildroot}/usr/share/package-licenses/podman/994658c265db5dbf456fa6163905cc9c0b3bda46 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/gogo/protobuf/LICENSE %{buildroot}/usr/share/package-licenses/podman/06b27345acae9303e13dde9974d2b2e318b05989 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/golang/groupcache/LICENSE %{buildroot}/usr/share/package-licenses/podman/172ca3bbafe312a1cf09cfff26953db2f425c28e || :
@@ -329,6 +351,7 @@ cp %{_builddir}/podman-%{version}/vendor/github.com/tchap/go-patricia/v2/LICENSE
 cp %{_builddir}/podman-%{version}/vendor/github.com/theupdateframework/go-tuf/LICENSE %{buildroot}/usr/share/package-licenses/podman/62ccba312ed46c6899bb2467365cea7397b347d4 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/titanous/rocacheck/LICENSE %{buildroot}/usr/share/package-licenses/podman/51c8ee1f4a6ab95d973e4bf81149cc30fbbc1d57 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/twitchyliquid64/golang-asm/LICENSE %{buildroot}/usr/share/package-licenses/podman/d6a5f1ecaedd723c325a2063375b3517e808a2b5 || :
+cp %{_builddir}/podman-%{version}/vendor/github.com/ugorji/go/codec/LICENSE %{buildroot}/usr/share/package-licenses/podman/dc9502b9eeb48967357baa199dfd9eb2dc7746bd || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/vbatts/tar-split/LICENSE %{buildroot}/usr/share/package-licenses/podman/40759db9edbb7fe30b64cc213f4f20c4618e2932 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/vbauerster/mpb/v8/UNLICENSE %{buildroot}/usr/share/package-licenses/podman/ff007ce11f3ff7964f1a5b04202c4e95b5c82c85 || :
 cp %{_builddir}/podman-%{version}/vendor/github.com/vishvananda/netlink/LICENSE %{buildroot}/usr/share/package-licenses/podman/f88291c879c4ee329bfa341b54eaedd29d3058cf || :
@@ -435,6 +458,7 @@ popd
 /usr/share/package-licenses/podman/376caa2cd54c4196280157d071524614350e7ce8
 /usr/share/package-licenses/podman/394222bf91bccecfbb28001b46c47e54761a1931
 /usr/share/package-licenses/podman/3faf341fbc32621fe1ac089ae2ab7a23980fc189
+/usr/share/package-licenses/podman/3fe1526478dfe06f7e7822c550a57c328f781410
 /usr/share/package-licenses/podman/40759db9edbb7fe30b64cc213f4f20c4618e2932
 /usr/share/package-licenses/podman/417483c9ccd2847921fd8605edf02b5a243b4761
 /usr/share/package-licenses/podman/41a17a069904e6a10fa1b1bcf67c2e4d836937d1
@@ -504,6 +528,7 @@ popd
 /usr/share/package-licenses/podman/b21e038d8bdf4afbfbc42f29cb5b3614309048c3
 /usr/share/package-licenses/podman/b3c529b8fb7f1d56db7381bc7ef5f481ea2ac2a4
 /usr/share/package-licenses/podman/b3c86ae465b21f7323059db335158b48187731c7
+/usr/share/package-licenses/podman/b4ebf917aef0f8f23e0172cc6f5995ee534eaeac
 /usr/share/package-licenses/podman/b679c8b9f60acc46c32df434424016dc38d85e03
 /usr/share/package-licenses/podman/b74b3b31bc15ad5e94fc1947d682aa3d84132fce
 /usr/share/package-licenses/podman/b7a606730713ac061594edab33cf941704b4a95c
@@ -524,6 +549,7 @@ popd
 /usr/share/package-licenses/podman/d6a5f1ecaedd723c325a2063375b3517e808a2b5
 /usr/share/package-licenses/podman/d9b858cfcfe8ab19d2c1134d04b1f8b1da03c373
 /usr/share/package-licenses/podman/da34754c05d40ff81f91de8c1b85ea6e5503e21d
+/usr/share/package-licenses/podman/dc9502b9eeb48967357baa199dfd9eb2dc7746bd
 /usr/share/package-licenses/podman/dd59a81b4235f5df8d511168eaaafb30ed88bc71
 /usr/share/package-licenses/podman/ddb5ce16d6184c36bffbf19074f58c3fddf6d399
 /usr/share/package-licenses/podman/e261f48217640a519af0e8a2f457de62a95a35c6
