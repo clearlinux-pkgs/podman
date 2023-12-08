@@ -7,7 +7,7 @@
 #
 Name     : podman
 Version  : 4.8.1
-Release  : 56
+Release  : 57
 URL      : https://github.com/containers/podman/archive/v4.8.1/podman-4.8.1.tar.gz
 Source0  : https://github.com/containers/podman/archive/v4.8.1/podman-4.8.1.tar.gz
 Summary  : Builds Dockerfile using the Docker client
@@ -117,7 +117,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1701897819
+export SOURCE_DATE_EPOCH=1702060395
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -161,7 +161,7 @@ FFLAGS="$CLEAR_INTERMEDIATE_FFLAGS"
 FCFLAGS="$CLEAR_INTERMEDIATE_FCFLAGS"
 ASFLAGS="$CLEAR_INTERMEDIATE_ASFLAGS"
 LDFLAGS="$CLEAR_INTERMEDIATE_LDFLAGS"
-export SOURCE_DATE_EPOCH=1701897819
+export SOURCE_DATE_EPOCH=1702060395
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/podman
 cp %{_builddir}/podman-%{version}/LICENSE %{buildroot}/usr/share/package-licenses/podman/ddb5ce16d6184c36bffbf19074f58c3fddf6d399 || :
