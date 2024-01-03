@@ -6,11 +6,11 @@
 # autospec commit: c1050fe
 #
 Name     : podman
-Version  : 4.8.2
-Release  : 58
-URL      : https://github.com/containers/podman/archive/v4.8.2/podman-4.8.2.tar.gz
-Source0  : https://github.com/containers/podman/archive/v4.8.2/podman-4.8.2.tar.gz
-Summary  : Builds Dockerfile using the Docker client
+Version  : 4.8.3
+Release  : 59
+URL      : https://github.com/containers/podman/archive/v4.8.3/podman-4.8.3.tar.gz
+Source0  : https://github.com/containers/podman/archive/v4.8.3/podman-4.8.3.tar.gz
+Summary  : Manage Pods, Containers and Container Images
 Group    : Development/Tools
 License  : Apache-2.0 BSD-2-Clause BSD-3-Clause CC-BY-SA-4.0 ISC MIT MPL-2.0 MPL-2.0-no-copyleft-exception Unlicense
 Requires: podman-bin = %{version}-%{release}
@@ -102,11 +102,11 @@ services components for the podman package.
 
 
 %prep
-%setup -q -n podman-4.8.2
-cd %{_builddir}/podman-4.8.2
+%setup -q -n podman-4.8.3
+cd %{_builddir}/podman-4.8.3
 %patch -P 1 -p1
 pushd ..
-cp -a podman-4.8.2 buildavx2
+cp -a podman-4.8.3 buildavx2
 popd
 
 %build
@@ -117,7 +117,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1702495749
+export SOURCE_DATE_EPOCH=1704296023
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -161,7 +161,7 @@ FFLAGS="$CLEAR_INTERMEDIATE_FFLAGS"
 FCFLAGS="$CLEAR_INTERMEDIATE_FCFLAGS"
 ASFLAGS="$CLEAR_INTERMEDIATE_ASFLAGS"
 LDFLAGS="$CLEAR_INTERMEDIATE_LDFLAGS"
-export SOURCE_DATE_EPOCH=1702495749
+export SOURCE_DATE_EPOCH=1704296023
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/podman
 cp %{_builddir}/podman-%{version}/LICENSE %{buildroot}/usr/share/package-licenses/podman/ddb5ce16d6184c36bffbf19074f58c3fddf6d399 || :
