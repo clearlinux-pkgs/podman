@@ -6,10 +6,10 @@
 # autospec commit: da8b975
 #
 Name     : podman
-Version  : 4.9.2
-Release  : 63
-URL      : https://github.com/containers/podman/archive/v4.9.2/podman-4.9.2.tar.gz
-Source0  : https://github.com/containers/podman/archive/v4.9.2/podman-4.9.2.tar.gz
+Version  : 4.9.3
+Release  : 64
+URL      : https://github.com/containers/podman/archive/v4.9.3/podman-4.9.3.tar.gz
+Source0  : https://github.com/containers/podman/archive/v4.9.3/podman-4.9.3.tar.gz
 Summary  : Manage Pods, Containers and Container Images
 Group    : Development/Tools
 License  : Apache-2.0 BSD-2-Clause BSD-3-Clause CC-BY-SA-4.0 ISC MIT MPL-2.0 MPL-2.0-no-copyleft-exception Unlicense
@@ -102,14 +102,11 @@ services components for the podman package.
 
 
 %prep
-%setup -q -n podman-4.9.2
-cd %{_builddir}/podman-4.9.2
+%setup -q -n podman-4.9.3
+cd %{_builddir}/podman-4.9.3
 %patch -P 1 -p1
 pushd ..
-cp -a podman-4.9.2 buildavx2
-popd
-pushd ..
-cp -a podman-4.9.2 buildapx
+cp -a podman-4.9.3 buildavx2
 popd
 
 %build
@@ -120,7 +117,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1707419129
+export SOURCE_DATE_EPOCH=1707925225
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -150,19 +147,6 @@ FCFLAGS="$CLEAR_INTERMEDIATE_FCFLAGS -march=x86-64-v3 "
 LDFLAGS="$CLEAR_INTERMEDIATE_LDFLAGS -march=x86-64-v3 "
 make  %{?_smp_mflags}  PREFIX=/usr
 popd
-pushd ../buildapx
-## build_prepend content
-unset CLEAR_DEBUG_TERSE
-## build_prepend end
-GOAMD64=v3
-CC=gcc-14
-CFLAGS="$CLEAR_INTERMEDIATE_CFLAGS -march=x86-64-v3 -mapxf -mavx10.1 -Wl,-z,x86-64-v3 "
-CXXFLAGS="$CLEAR_INTERMEDIATE_CXXFLAGS -march=x86-64-v3 -Wl,-z,x86-64-v3 "
-FFLAGS="$CLEAR_INTERMEDIATE_FFLAGS -march=x86-64-v3 -mapxf -mavx10.1 -Wl,-z,x86-64-v3 "
-FCFLAGS="$CLEAR_INTERMEDIATE_FCFLAGS -march=x86-64-v3 -mapxf -mavx10.1 "
-LDFLAGS="$CLEAR_INTERMEDIATE_LDFLAGS -march=x86-64-v3 "
-make  %{?_smp_mflags}  PREFIX=/usr
-popd
 
 %install
 export GCC_IGNORE_WERROR=1
@@ -179,7 +163,7 @@ FFLAGS="$CLEAR_INTERMEDIATE_FFLAGS"
 FCFLAGS="$CLEAR_INTERMEDIATE_FCFLAGS"
 ASFLAGS="$CLEAR_INTERMEDIATE_ASFLAGS"
 LDFLAGS="$CLEAR_INTERMEDIATE_LDFLAGS"
-export SOURCE_DATE_EPOCH=1707419129
+export SOURCE_DATE_EPOCH=1707925225
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/podman
 cp %{_builddir}/podman-%{version}/LICENSE %{buildroot}/usr/share/package-licenses/podman/ddb5ce16d6184c36bffbf19074f58c3fddf6d399 || :
@@ -441,14 +425,9 @@ GOAMD64=v3
 pushd ../buildavx2/
 %make_install_v3 PREFIX=/usr
 popd
-GOAMD64=v3
-pushd ../buildapx/
-%make_install_va PREFIX=/usr
-popd
 GOAMD64=v2
 %make_install PREFIX=/usr
 /usr/bin/elf-move.py avx2 %{buildroot}-v3 %{buildroot} %{buildroot}/usr/share/clear/filemap/filemap-%{name}
-/usr/bin/elf-move.py apx %{buildroot}-va %{buildroot} %{buildroot}/usr/share/clear/filemap/filemap-%{name}
 
 %files
 %defattr(-,root,root,-)
