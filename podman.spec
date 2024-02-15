@@ -7,7 +7,7 @@
 #
 Name     : podman
 Version  : 4.9.3
-Release  : 64
+Release  : 65
 URL      : https://github.com/containers/podman/archive/v4.9.3/podman-4.9.3.tar.gz
 Source0  : https://github.com/containers/podman/archive/v4.9.3/podman-4.9.3.tar.gz
 Summary  : Manage Pods, Containers and Container Images
