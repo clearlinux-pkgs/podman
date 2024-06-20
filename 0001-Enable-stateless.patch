@@ -1,8 +1,9 @@
-From 0c39bada5414f4d76011b8966b3d067f5090662d Mon Sep 17 00:00:00 2001
+From d76cddd1a0097ca95d4a65a58ef15727a6068ab3 Mon Sep 17 00:00:00 2001
 From: William Douglas <william.douglas@intel.com>
-Date: Fri, 11 Aug 2023 17:06:49 -0700
+Date: Thu, 20 Jun 2024 10:31:43 -0700
 Subject: [PATCH] Enable stateless
 
+Signed-off-by: William Douglas <william.douglas@intel.com>
 ---
  Makefile                                           |  8 +++++++-
  additionalfiles/policy.json                        | 14 ++++++++++++++
@@ -12,10 +13,10 @@ Subject: [PATCH] Enable stateless
  create mode 100644 additionalfiles/policy.json
 
 diff --git a/Makefile b/Makefile
-index 8e701c3..bf04178 100644
+index 3cdec15..d43d32e 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -38,6 +38,7 @@ LIBEXECDIR ?= ${PREFIX}/libexec
+@@ -39,6 +39,7 @@ LIBEXECDIR ?= ${PREFIX}/libexec
  LIBEXECPODMAN ?= ${LIBEXECDIR}/podman
  MANDIR ?= ${PREFIX}/share/man
  SHAREDIR_CONTAINERS ?= ${PREFIX}/share/containers
@@ -23,7 +24,7 @@ index 8e701c3..bf04178 100644
  ETCDIR ?= /etc
  LIBDIR ?= ${PREFIX}/lib
  TMPFILESDIR ?= ${LIBDIR}/tmpfiles.d
-@@ -797,8 +798,13 @@ rpm-install: package  ## Install rpm packages
+@@ -836,8 +837,13 @@ rpm-install: package  ## Install rpm packages
  	/usr/bin/podman version
  	/usr/bin/podman info  # will catch a broken conmon
  
@@ -59,18 +60,18 @@ index 0000000..dffc54a
 +        }
 +}
 diff --git a/vendor/github.com/containers/common/pkg/config/config_linux.go b/vendor/github.com/containers/common/pkg/config/config_linux.go
-index f294402..b3b792d 100644
+index 66d1934..81aebf2 100644
 --- a/vendor/github.com/containers/common/pkg/config/config_linux.go
 +++ b/vendor/github.com/containers/common/pkg/config/config_linux.go
-@@ -16,7 +16,7 @@ const (
+@@ -13,7 +13,7 @@ const (
  
  	// DefaultSignaturePolicyPath is the default value for the
  	// policy.json file.
 -	DefaultSignaturePolicyPath = "/etc/containers/policy.json"
 +	DefaultSignaturePolicyPath = "/usr/share/defaults/containers/policy.json"
+ )
  
- 	// Mount type for mounting host dir
- 	_typeBind = "bind"
+ func selinuxEnabled() bool {
 diff --git a/vendor/github.com/containers/image/v5/signature/policy_paths_common.go b/vendor/github.com/containers/image/v5/signature/policy_paths_common.go
 index 290fc24..48dc9f5 100644
 --- a/vendor/github.com/containers/image/v5/signature/policy_paths_common.go
@@ -82,5 +83,5 @@ index 290fc24..48dc9f5 100644
 -const builtinDefaultPolicyPath = "/etc/containers/policy.json"
 +const builtinDefaultPolicyPath = "/usr/share/defaults/containers/policy.json"
 -- 
-2.41.0
+2.45.2
 
