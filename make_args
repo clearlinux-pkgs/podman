@@ -1,1 +1,1 @@
-PREFIX=/usr
+EXTRA_BUILDTAGS=cni PREFIX=/usr
