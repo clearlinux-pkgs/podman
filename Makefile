@@ -1,5 +1,5 @@
 PKG_NAME := podman
-URL = https://github.com/containers/podman/archive/v5.1.2/podman-5.1.2.tar.gz
+URL = https://github.com/containers/podman/archive/v5.2.0/podman-5.2.0.tar.gz
 ARCHIVES = 
 
 include ../common/Makefile.common
