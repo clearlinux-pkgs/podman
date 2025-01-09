@@ -7,7 +7,7 @@
 #
 Name     : podman
 Version  : 5.2.5
-Release  : 74
+Release  : 75
 URL      : https://github.com/containers/podman/archive/v5.2.5/podman-5.2.5.tar.gz
 Source0  : https://github.com/containers/podman/archive/v5.2.5/podman-5.2.5.tar.gz
 Summary  : Manage Pods, Containers and Container Images
