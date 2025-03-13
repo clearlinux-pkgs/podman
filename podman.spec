@@ -6,10 +6,10 @@
 # autospec commit: e36a856
 #
 Name     : podman
-Version  : 5.4.0
-Release  : 77
-URL      : https://github.com/containers/podman/archive/v5.4.0/podman-5.4.0.tar.gz
-Source0  : https://github.com/containers/podman/archive/v5.4.0/podman-5.4.0.tar.gz
+Version  : 5.4.1
+Release  : 78
+URL      : https://github.com/containers/podman/archive/v5.4.1/podman-5.4.1.tar.gz
+Source0  : https://github.com/containers/podman/archive/v5.4.1/podman-5.4.1.tar.gz
 Summary  : Manage Pods, Containers and Container Images
 Group    : Development/Tools
 License  : Apache-2.0 BSD-2-Clause BSD-3-Clause CC-BY-SA-4.0 ISC MIT MPL-2.0 MPL-2.0-no-copyleft-exception Unlicense
@@ -104,11 +104,11 @@ services components for the podman package.
 
 
 %prep
-%setup -q -n podman-5.4.0
-cd %{_builddir}/podman-5.4.0
+%setup -q -n podman-5.4.1
+cd %{_builddir}/podman-5.4.1
 %patch -P 1 -p1
 pushd ..
-cp -a podman-5.4.0 buildavx2
+cp -a podman-5.4.1 buildavx2
 popd
 
 %build
@@ -119,7 +119,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1741367125
+export SOURCE_DATE_EPOCH=1741889764
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -165,7 +165,7 @@ FFLAGS="$CLEAR_INTERMEDIATE_FFLAGS"
 FCFLAGS="$CLEAR_INTERMEDIATE_FCFLAGS"
 ASFLAGS="$CLEAR_INTERMEDIATE_ASFLAGS"
 LDFLAGS="$CLEAR_INTERMEDIATE_LDFLAGS"
-export SOURCE_DATE_EPOCH=1741367125
+export SOURCE_DATE_EPOCH=1741889764
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/podman
 cp %{_builddir}/podman-%{version}/LICENSE %{buildroot}/usr/share/package-licenses/podman/ddb5ce16d6184c36bffbf19074f58c3fddf6d399 || :
